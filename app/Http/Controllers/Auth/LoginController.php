@@ -8,20 +8,15 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\ActivityLog;
 
-class AuthenticatedSessionController extends Controller
+class LoginController extends Controller
 {
-    /**
-     * Display the login view.
-     */
     public function create(): View
     {
         return view('auth.login');
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
@@ -29,38 +24,35 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         // Catat aktivitas login
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'aktivitas' => 'Login',
-            'deskripsi' => 'User ' . Auth::user()->nama . ' login ke sistem',
-        ]);
+        ActivityLog::logActivity(
+            Auth::id(),
+            'Login',
+            'User ' . Auth::user()->nama . ' login ke sistem'
+        );
 
         // Redirect berdasarkan role
         $user = Auth::user();
 
-        if ($user->isAdmin()) {
+        if ($user->role === 'admin') {
             return redirect()->intended(route('admin.dashboard'));
-        } elseif ($user->isPimpinan()) {
+        } elseif ($user->role === 'pimpinan') {
             return redirect()->intended(route('pimpinan.dashboard'));
-        } elseif ($user->isMahasiswa()) {
+        } elseif ($user->role === 'mahasiswa') {
             return redirect()->intended(route('mahasiswa.dashboard'));
         }
 
         return redirect()->intended(route('dashboard'));
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
-     public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse
     {
         // Catat aktivitas logout
         if (Auth::check()) {
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'aktivitas' => 'Logout',
-                'deskripsi' => 'User ' . Auth::user()->nama . ' logout dari sistem',
-            ]);
+            ActivityLog::logActivity(
+                Auth::id(),
+                'Logout',
+                'User ' . Auth::user()->nama . ' logout dari sistem'
+            );
         }
 
         Auth::guard('web')->logout();
