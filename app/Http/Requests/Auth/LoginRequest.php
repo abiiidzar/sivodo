@@ -19,7 +19,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required', 'string'],
+            'username' => ['nullable', 'string'],
+            'email' => ['nullable', 'email'],
             'password' => ['required', 'string'],
         ];
     }
@@ -28,15 +29,29 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        $loginValue = $this->input('username') ?? $this->input('email');
+        $password = $this->input('password');
 
-            throw ValidationException::withMessages([
-                'username' => trans('auth.failed'),
-            ]);
+        $attempts = [];
+
+        if ($loginValue !== null) {
+            $attempts[] = ['email' => $loginValue, 'password' => $password];
+            $attempts[] = ['username' => $loginValue, 'password' => $password];
         }
 
-        RateLimiter::clear($this->throttleKey());
+        foreach ($attempts as $credentials) {
+            if (Auth::attempt($credentials, $this->boolean('remember'))) {
+                RateLimiter::clear($this->throttleKey());
+
+                return;
+            }
+        }
+
+        RateLimiter::hit($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'username' => trans('auth.failed'),
+        ]);
     }
 
     public function ensureIsNotRateLimited(): void
@@ -59,12 +74,18 @@ class LoginRequest extends FormRequest
 
     public function prepareForValidation()
     {
+        $loginValue = $this->input('username') ?? $this->input('email');
+
         $this->merge([
-            'username' => $this->input('username'),
+            'username' => $loginValue,
+            'email' => $loginValue,
         ]);
     }
+
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('username')) . '|' . $this->ip());
+        $loginValue = (string) ($this->input('username') ?? $this->input('email') ?? '');
+
+        return Str::transliterate(Str::lower($loginValue) . '|' . $this->ip());
     }
 }

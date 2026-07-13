@@ -1,72 +1,104 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-[#1a2744] leading-tight">
-            {{ __('Dashboard Mahasiswa') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Info Mahasiswa -->
-            <div class="bg-white rounded-lg shadow p-6 mb-8">
-                <div class="flex items-center gap-4">
-                    <div class="w-20 h-20 rounded-full bg-[#1a2744] text-white flex items-center justify-center text-3xl font-bold">
-                        {{ substr($mahasiswa->nama, 0, 2) }}
+@section('title', 'Dashboard Mahasiswa')
+
+@section('header', 'Dashboard Mahasiswa')
+
+@section('content')
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Profil Card -->
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex flex-col items-center text-center">
+                <div class="w-24 h-24 rounded-full bg-gold-15 border-2 border-gold flex items-center justify-center mb-4 overflow-hidden">
+                    @if(Auth::user()->foto)
+                        <img src="{{ Storage::url(Auth::user()->foto) }}" alt="Profile" class="w-full h-full object-cover">
+                    @else
+                        <span class="text-gold text-3xl font-bold">{{ substr($mahasiswa->nama, 0, 2) }}</span>
+                    @endif
+                </div>
+                <h3 class="text-xl font-bold text-navy">{{ $mahasiswa->nama }}</h3>
+                <p class="text-gray-500 text-sm">{{ $mahasiswa->nim }}</p>
+                <span class="mt-2 px-3 py-1 bg-gold-10 text-gold text-xs font-semibold rounded-full">{{ $mahasiswa->program_studi }}</span>
+
+                <div class="w-full mt-4 pt-4 border-t border-gray-100">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500">Semester</span>
+                        <span class="font-semibold text-navy">Semester {{ $mahasiswa->semester }}</span>
                     </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-[#1a2744]">{{ $mahasiswa->nama }}</h3>
-                        <p class="text-gray-500">{{ $mahasiswa->nim }} • {{ $mahasiswa->program_studi }}</p>
-                        <p class="text-sm">Semester {{ $mahasiswa->semester }} • Kelas {{ $mahasiswa->kelas }}</p>
-                        <p class="text-sm mt-1">
-                            Status Voting:
-                            <span class="font-semibold {{ $mahasiswa->status_voting == 'Sudah' ? 'text-green-600' : 'text-red-600' }}">
-                                {{ $mahasiswa->status_voting }}
-                            </span>
-                        </p>
+                    <div class="flex justify-between text-sm mt-2">
+                        <span class="text-gray-500">Kelas</span>
+                        <span class="font-semibold text-navy">{{ $mahasiswa->kelas ?? '-' }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm mt-2">
+                        <span class="text-gray-500">Status Voting</span>
+                        <span class="font-semibold {{ $mahasiswa->status_voting == 'Sudah' ? 'text-emerald-600' : 'text-red-500' }}">
+                            {{ $mahasiswa->status_voting }}
+                        </span>
                     </div>
                 </div>
             </div>
-
-            <!-- Semester Aktif -->
-            <div class="bg-[rgba(201,162,39,0.08)] border border-[rgba(201,162,39,0.25)] rounded-lg p-4 mb-8">
-                <p class="text-[#1a2744]">
-                    <span class="font-bold">Semester Aktif:</span>
-                    {{ $semesterAktif->tahun_ajaran ?? 'Belum Ada' }} -
-                    {{ $semesterAktif->semester ?? '' }}
-                </p>
-            </div>
-
-            <!-- Daftar Dosen -->
-            <h3 class="font-semibold text-[#1a2744] text-lg mb-4">Daftar Dosen Semester Ini</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($dosens as $dosen)
-                    <div class="bg-white rounded-lg shadow p-6 {{ isset($statusVoting[$dosen->id]) && $statusVoting[$dosen->id] ? 'opacity-70' : '' }}">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 rounded-full bg-[#1a2744] text-white flex items-center justify-center font-bold text-lg">
-                                {{ substr($dosen->nama, 0, 2) }}
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-[#1a2744]">{{ $dosen->nama }}</h4>
-                                <p class="text-sm text-gray-500">{{ $dosen->nidn }}</p>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-2">{{ $dosen->program_studi }}</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs px-2 py-1 bg-[rgba(26,39,68,0.10)] text-[#1a2744] rounded">
-                                {{ $dosen->status_dosen }}
-                            </span>
-                            @if(isset($statusVoting[$dosen->id]) && $statusVoting[$dosen->id])
-                                <span class="text-xs px-2 py-1 bg-green-500 text-white rounded">Sudah Dinilai</span>
-                            @else
-                                <a href="{{ route('mahasiswa.voting.create', $dosen->id) }}"
-                                   class="text-sm text-[#1a2744] hover:text-[#c9a227] font-medium">
-                                    Mulai Penilaian →
-                                </a>
-                            @endif
-                        </div>
-                    </div>
-                @endforeach
-            </div>
         </div>
     </div>
-</x-app-layout>
+
+    <!-- Statistik & Informasi -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="stat-card rounded-xl p-4 shadow-sm border border-gray-100">
+                <p class="text-xs text-gray-500">Total Dosen</p>
+                <p class="text-2xl font-bold text-navy">{{ $total_dosen }}</p>
+            </div>
+            <div class="stat-card rounded-xl p-4 shadow-sm border border-gray-100">
+                <p class="text-xs text-gray-500">Sudah Dinilai</p>
+                <p class="text-2xl font-bold text-emerald-600">{{ $sudah_voting }}</p>
+            </div>
+            <div class="stat-card rounded-xl p-4 shadow-sm border border-gray-100">
+                <p class="text-xs text-gray-500">Belum Dinilai</p>
+                <p class="text-2xl font-bold text-red-500">{{ $belum_voting }}</p>
+            </div>
+        </div>
+
+        <!-- Progress Voting -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex justify-between items-center mb-3">
+                <h4 class="font-semibold text-navy">Progress Voting</h4>
+                <span class="text-gold font-bold text-lg">{{ $progress }}%</span>
+            </div>
+            <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-gold rounded-full transition-all duration-700" style="width: {{ $progress }}%"></div>
+            </div>
+            <p class="text-sm text-gray-500 mt-2">{{ $sudah_voting }} dari {{ $total_dosen }} dosen telah dinilai</p>
+        </div>
+
+        <!-- Informasi Semester Aktif -->
+        <div class="banner-info rounded-xl p-4">
+            <div class="flex items-start space-x-3">
+                <svg class="w-5 h-5 text-gold mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                    <p class="text-sm font-semibold text-navy">Semester Aktif</p>
+                    <p class="text-sm text-gray-600">{{ $semester_aktif->tahun_ajaran ?? 'Belum ada semester aktif' }} - {{ $semester_aktif->semester ?? '-' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tombol Aksi -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <a href="#" class="flex items-center justify-center space-x-2 px-4 py-3 bg-navy text-white rounded-lg hover:bg-navy/90 transition text-sm font-medium">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                </svg>
+                <span>Mulai Voting</span>
+            </a>
+            <a href="#" class="flex items-center justify-center space-x-2 px-4 py-3 border border-navy text-navy rounded-lg hover:bg-navy hover:text-white transition text-sm font-medium">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Lihat Ranking Dosen</span>
+            </a>
+        </div>
+    </div>
+</div>
+@endsection

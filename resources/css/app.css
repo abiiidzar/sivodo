@@ -1,3 +1,190 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom Styles untuk SIVODO */
+
+/* Background Global */
+body {
+    background-color: #f5f3ef;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Navbar Styles */
+.navbar-sivodo {
+    background-color: #1a2744;
+}
+
+/* Login Page Styles */
+.login-bg {
+    background: linear-gradient(135deg, #1a2744 0%, #2e4a8a 50%, #1a2744 100%);
+    min-height: 100vh;
+}
+
+.login-ornament-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(201, 162, 39, 0.10);
+}
+
+.login-ornament-grid {
+    background-image:
+        linear-gradient(rgba(201, 162, 39, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201, 162, 39, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+.login-logo-border {
+    border: 2px solid #c9a227;
+}
+
+.login-logo-bg {
+    background: rgba(201, 162, 39, 0.15);
+}
+
+.login-input {
+    background-color: #eef0f5;
+    border-color: rgba(26, 39, 68, 0.12);
+    transition: all 0.3s ease;
+}
+
+.login-input:focus {
+    border-color: #c9a227;
+    ring: 2px solid #c9a227;
+    ring-offset: 2px;
+}
+
+.login-btn {
+    background: linear-gradient(135deg, #1a2744 0%, #2e4a8a 100%);
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(26, 39, 68, 0.3);
+}
+
+/* Card Dosen Styles */
+.card-dosen {
+    background: #ffffff;
+    border: 1px solid rgba(26, 39, 68, 0.12);
+    transition: all 0.3s ease;
+}
+
+.card-dosen:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(26, 39, 68, 0.10);
+}
+
+.card-dosen-done {
+    opacity: 0.7;
+}
+
+.card-dosen-overlay {
+    background: linear-gradient(180deg, rgba(26, 39, 68, 0.7) 0%, transparent 100%);
+}
+
+.badge-prodi {
+    background: rgba(26, 39, 68, 0.10);
+    color: #1a2744;
+}
+
+.badge-selesai {
+    background: #10b981;
+    color: #ffffff;
+}
+
+.link-voting {
+    color: #1a2744;
+    transition: color 0.3s ease;
+}
+
+.link-voting:hover {
+    color: #c9a227;
+}
+
+/* Bintang Rating */
+.rating-star {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.rating-star:hover {
+    transform: scale(1.2);
+}
+
+.rating-star-1 { color: #c0392b; }
+.rating-star-2 { color: #e67e22; }
+.rating-star-3 { color: #f39c12; }
+.rating-star-4 { color: #27ae60; }
+.rating-star-5 { color: #1a2744; }
+.rating-star-default { color: #cbd5e1; }
+
+/* Progress Bar */
+.progress-gold {
+    background: linear-gradient(90deg, #1a2744 0%, #c9a227 100%);
+}
+
+/* Stat Cards */
+.stat-card {
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(26, 39, 68, 0.08);
+}
+
+/* Ranking Badges */
+.rank-1 { background: #c9a227; color: #1a2744; }
+.rank-2 { background: #9ca3af; color: #1a2744; }
+.rank-3 { background: #cd7f32; color: #ffffff; }
+.rank-default { background: #eef0f5; color: #6b7280; }
+
+/* Tabs */
+.tab-active {
+    background: #1a2744;
+    color: #ffffff;
+}
+
+.tab-inactive {
+    color: #6b7280;
+}
+
+/* Focus Ring */
+.focus-ring-gold:focus {
+    outline: 2px solid #c9a227;
+    outline-offset: 2px;
+}
+
+/* Banner */
+.banner-info {
+    background: rgba(201, 162, 39, 0.08);
+    border: 1px solid rgba(201, 162, 39, 0.25);
+}
+
+.banner-success {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+}
+
+/* Scrollbar Custom */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f5f3ef;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1a2744;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #c9a227;
+}

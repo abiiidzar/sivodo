@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\ActivityLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,11 +30,11 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         // Catat aktivitas login
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'aktivitas' => 'Login',
-            'deskripsi' => 'User ' . Auth::user()->nama . ' login ke sistem',
-        ]);
+        ActivityLog::logActivity(
+            Auth::id(),
+            'Login',
+            'User ' . Auth::user()->nama . ' login ke sistem'
+        );
 
         // Redirect berdasarkan role
         $user = Auth::user();
