@@ -3,11 +3,9 @@
         <div class="flex items-center justify-between h-16">
             <!-- Logo & Brand -->
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-gold-15 border-2 border-gold flex items-center justify-center">
-                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
+                <img src="{{ asset('img/enbi1.png') }}"
+                    alt="Logo"
+                    class="h-10 w-auto">
                 <div>
                     <h1 class="text-white font-bold text-lg leading-tight">SIVODO</h1>
                     <p class="text-blue-muda text-xs">PT. Lentera Edukasi ENBI</p>
