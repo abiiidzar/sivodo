@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard Mahasiswa')
-
 @section('header', 'Dashboard Mahasiswa')
 
 @section('content')
@@ -33,7 +32,7 @@
                     <div class="flex justify-between text-sm mt-2">
                         <span class="text-gray-500">Status Voting</span>
                         <span class="font-semibold {{ $mahasiswa->status_voting == 'Sudah' ? 'text-emerald-600' : 'text-red-500' }}">
-                            {{ $mahasiswa->status_voting }}
+                            {{ $mahasiswa->status_voting ?? 'Belum' }}
                         </span>
                     </div>
                 </div>
@@ -47,15 +46,15 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="stat-card rounded-xl p-4 shadow-sm border border-gray-100">
                 <p class="text-xs text-gray-500">Total Dosen</p>
-                <p class="text-2xl font-bold text-navy">{{ $total_dosen }}</p>
+                <p class="text-2xl font-bold text-navy">{{ $total_dosen ?? 0 }}</p>  {{-- ← pakai $total_dosen --}}
             </div>
             <div class="stat-card rounded-xl p-4 shadow-sm border border-gray-100">
                 <p class="text-xs text-gray-500">Sudah Dinilai</p>
-                <p class="text-2xl font-bold text-emerald-600">{{ $sudah_voting }}</p>
+                <p class="text-2xl font-bold text-emerald-600">{{ $sudah_voting ?? 0 }}</p>  {{-- ← pakai $sudah_voting --}}
             </div>
             <div class="stat-card rounded-xl p-4 shadow-sm border border-gray-100">
                 <p class="text-xs text-gray-500">Belum Dinilai</p>
-                <p class="text-2xl font-bold text-red-500">{{ $belum_voting }}</p>
+                <p class="text-2xl font-bold text-red-500">{{ $belum_voting ?? 0 }}</p>  {{-- ← pakai $belum_voting --}}
             </div>
         </div>
 
@@ -63,12 +62,12 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex justify-between items-center mb-3">
                 <h4 class="font-semibold text-navy">Progress Voting</h4>
-                <span class="text-gold font-bold text-lg">{{ $progress }}%</span>
+                <span class="text-gold font-bold text-lg">{{ $progress ?? 0 }}%</span>  {{-- ← pakai $progress --}}
             </div>
             <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-gold rounded-full transition-all duration-700" style="width: {{ $progress }}%"></div>
+                <div class="h-full bg-gradient-gold rounded-full transition-all duration-700" style="width: {{ $progress ?? 0 }}%"></div>
             </div>
-            <p class="text-sm text-gray-500 mt-2">{{ $sudah_voting }} dari {{ $total_dosen }} dosen telah dinilai</p>
+            <p class="text-sm text-gray-500 mt-2">{{ $sudah_voting ?? 0 }} dari {{ $total_dosen ?? 0 }} dosen telah dinilai</p>
         </div>
 
         <!-- Informasi Semester Aktif -->
@@ -79,25 +78,25 @@
                 </svg>
                 <div>
                     <p class="text-sm font-semibold text-navy">Semester Aktif</p>
-                    <p class="text-sm text-gray-600">{{ $semester_aktif->tahun_ajaran ?? 'Belum ada semester aktif' }} - {{ $semester_aktif->semester ?? '-' }}</p>
+                    <p class="text-sm text-gray-600">{{ $semesterAktif->tahun_ajaran ?? 'Belum ada semester aktif' }} - {{ $semesterAktif->semester ?? '-' }}</p>  {{-- ← pakai $semesterAktif --}}
                 </div>
             </div>
         </div>
 
         <!-- Tombol Aksi -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <a href="#" class="flex items-center justify-center space-x-2 px-4 py-3 bg-navy text-white rounded-lg hover:bg-navy/90 transition text-sm font-medium">
+            {{-- <a href="{{ route('mahasiswa.dosen.index') }}" class="flex items-center justify-center space-x-2 px-4 py-3 bg-navy text-white rounded-lg hover:bg-navy/90 transition text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
                 </svg>
                 <span>Mulai Voting</span>
             </a>
-            <a href="#" class="flex items-center justify-center space-x-2 px-4 py-3 border border-navy text-navy rounded-lg hover:bg-navy hover:text-white transition text-sm font-medium">
+            <a href="{{ route('mahasiswa.ranking.index') }}" class="flex items-center justify-center space-x-2 px-4 py-3 border border-navy text-navy rounded-lg hover:bg-navy hover:text-white transition text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <span>Lihat Ranking Dosen</span>
-            </a>
+            </a> --}}
         </div>
     </div>
 </div>

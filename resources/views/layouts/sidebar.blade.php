@@ -39,11 +39,11 @@
             <a href="{{ route('admin.pertanyaan.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.pertanyaan.*') ? 'bg-navy text-white' : 'text-gray-600 hover:bg-gray-100' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <span>Data Pertanyaan</span>
-            </a> --}}
+            </a> 
 
             <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 pt-4">Laporan</div>
 
-            {{-- <a href="{{ route('admin.laporan.dosen') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.laporan.dosen') ? 'bg-navy text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+            <a href="{{ route('admin.laporan.dosen') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.laporan.dosen') ? 'bg-navy text-white' : 'text-gray-600 hover:bg-gray-100' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
                 <span>Laporan Dosen</span>
             </a>
@@ -75,7 +75,7 @@
                 <span>Dashboard</span>
             </a>
 
-            <a href="{{ route('mahasiswa.daftar-dosen') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('mahasiswa.daftar-dosen') ? 'bg-navy text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+            {{-- <a href="{{ route('mahasiswa.daftar-dosen') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('mahasiswa.daftar-dosen') ? 'bg-navy text-white' : 'text-gray-600 hover:bg-gray-100' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 <span>Daftar Dosen</span>
                 @php
@@ -106,7 +106,7 @@
             <a href="{{ route('mahasiswa.ranking') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('mahasiswa.ranking') ? 'bg-navy text-white' : 'text-gray-600 hover:bg-gray-100' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                 <span>Ranking Dosen</span>
-            </a>
+            </a> --}}
         @endif
 
         @if($user->isPimpinan())
@@ -118,7 +118,7 @@
                 <span>Dashboard</span>
             </a>
 
-            <a href="{{ route('pimpinan.grafik') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('pimpinan.grafik') ? 'bg-navy text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+            {{-- <a href="{{ route('pimpinan.grafik') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('pimpinan.grafik') ? 'bg-navy text-white' : 'text-gray-600 hover:bg-gray-100' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 <span>Grafik & Chart</span>
             </a>
@@ -138,7 +138,7 @@
             <a href="{{ route('pimpinan.export') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('pimpinan.export') ? 'bg-navy text-white' : 'text-gray-600 hover:bg-gray-100' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 <span>Export PDF/Excel</span>
-            </a>
+            </a> --}}
         @endif
 
         <!-- Profil (semua role) -->

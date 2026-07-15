@@ -11,7 +11,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm text-gray-500">Total Voting</p>
-                <p class="text-3xl font-bold text-navy mt-1">{{ $total_voting }}</p>
+                <p class="text-3xl font-bold text-navy mt-1">{{ $totalVoting }}</p>
             </div>
             <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,7 +25,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm text-gray-500">Rata-rata Kepuasan</p>
-                <p class="text-3xl font-bold text-gold mt-1">{{ number_format($rata_rata_kepuasan, 2) }}</p>
+                <p class="text-3xl font-bold text-gold mt-1">{{ number_format($rataRataKepuasan, 2) }}</p>
             </div>
             <div class="w-12 h-12 rounded-full bg-gold-10 flex items-center justify-center">
                 <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,7 +39,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm text-gray-500">Mahasiswa Voting</p>
-                <p class="text-3xl font-bold text-navy mt-1">{{ $total_mahasiswa_voting }}</p>
+                <p class="text-3xl font-bold text-navy mt-1">{{ $totalMahasiswaVoting }}</p>
             </div>
             <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +53,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm text-gray-500">Total Dosen</p>
-                <p class="text-3xl font-bold text-navy mt-1">{{ $total_dosen }}</p>
+                <p class="text-3xl font-bold text-navy mt-1">{{ $totalDosen }}</p>
             </div>
             <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center">
                 <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,62 +66,66 @@
 
 <!-- Dosen Terbaik & Perlu Pembinaan -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-    @if($dosen_terbaik)
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center justify-between mb-4">
-            <h4 class="font-semibold text-navy">🏆 Dosen Terbaik</h4>
-            <span class="rank-1 px-3 py-1 rounded-full text-xs font-bold">#1</span>
-        </div>
-        <div class="flex items-center space-x-4">
-            <div class="w-16 h-16 rounded-full bg-gold-15 border-2 border-gold flex items-center justify-center overflow-hidden">
-                @if($dosen_terbaik->foto)
-                    <img src="{{ Storage::url($dosen_terbaik->foto) }}" alt="{{ $dosen_terbaik->nama }}" class="w-full h-full object-cover">
-                @else
-                    <span class="text-gold text-xl font-bold">{{ substr($dosen_terbaik->nama, 0, 2) }}</span>
-                @endif
+    {{-- Dosen Terbaik --}}
+    @if($dosenTerbaik && $dosenTerbaik->count() > 0)
+        @php $top = $dosenTerbaik->first(); @endphp  {{-- ← Ambil pertama --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="font-semibold text-navy">🏆 Dosen Terbaik</h4>
+                <span class="rank-1 px-3 py-1 rounded-full text-xs font-bold">#1</span>
             </div>
-            <div>
-                <p class="font-bold text-navy text-lg">{{ $dosen_terbaik->nama }}</p>
-                <p class="text-sm text-gray-500">{{ $dosen_terbaik->program_studi }}</p>
-                <div class="flex items-center space-x-2 mt-1">
-                    <span class="text-gold font-bold text-xl">{{ number_format($dosen_terbaik->getRataRata(), 2) }}</span>
-                    <span class="text-xs px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-full">{{ $dosen_terbaik->getKategori() }}</span>
+            <div class="flex items-center space-x-4">
+                <div class="w-16 h-16 rounded-full bg-gold-15 border-2 border-gold flex items-center justify-center overflow-hidden">
+                    @if($top->foto)  {{-- ← Pakai $top, bukan $dosen_terbaik --}}
+                        <img src="{{ Storage::url($top->foto) }}" alt="{{ $top->nama }}" class="w-full h-full object-cover">
+                    @else
+                        <span class="text-gold text-xl font-bold">{{ substr($top->nama, 0, 2) }}</span>
+                    @endif
+                </div>
+                <div>
+                    <p class="font-bold text-navy text-lg">{{ $top->nama }}</p>
+                    <p class="text-sm text-gray-500">{{ $top->program_studi }}</p>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <span class="text-gold font-bold text-xl">{{ number_format($top->getRataRata(), 2) }}</span>
+                        <span class="text-xs px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-full">{{ $top->getKategori() }}</span>
+                    </div>
                 </div>
             </div>
+            <div class="mt-3 pt-3 border-t border-gray-100">
+                <p class="text-xs text-gray-500">Total Voting: {{ $top->getTotalVoting() }} mahasiswa</p>
+            </div>
         </div>
-        <div class="mt-3 pt-3 border-t border-gray-100">
-            <p class="text-xs text-gray-500">Total Voting: {{ $dosen_terbaik->getTotalVoting() }} mahasiswa</p>
-        </div>
-    </div>
     @endif
 
-    @if($dosen_perlu_pembinaan)
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center justify-between mb-4">
-            <h4 class="font-semibold text-navy">📋 Perlu Pembinaan</h4>
-            <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs font-bold">Perhatian</span>
-        </div>
-        <div class="flex items-center space-x-4">
-            <div class="w-16 h-16 rounded-full bg-red-50 border-2 border-red-300 flex items-center justify-center overflow-hidden">
-                @if($dosen_perlu_pembinaan->foto)
-                    <img src="{{ Storage::url($dosen_perlu_pembinaan->foto) }}" alt="{{ $dosen_perlu_pembinaan->nama }}" class="w-full h-full object-cover">
-                @else
-                    <span class="text-red-500 text-xl font-bold">{{ substr($dosen_perlu_pembinaan->nama, 0, 2) }}</span>
-                @endif
+    {{-- Dosen Perlu Pembinaan --}}
+    @if($dosenPerluPembinaan && $dosenPerluPembinaan->count() > 0)
+        @php $bottom = $dosenPerluPembinaan->first(); @endphp  {{-- ← Ambil pertama --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="font-semibold text-navy">📋 Perlu Pembinaan</h4>
+                <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs font-bold">Perhatian</span>
             </div>
-            <div>
-                <p class="font-bold text-navy text-lg">{{ $dosen_perlu_pembinaan->nama }}</p>
-                <p class="text-sm text-gray-500">{{ $dosen_perlu_pembinaan->program_studi }}</p>
-                <div class="flex items-center space-x-2 mt-1">
-                    <span class="text-red-500 font-bold text-xl">{{ number_format($dosen_perlu_pembinaan->getRataRata(), 2) }}</span>
-                    <span class="text-xs px-2 py-0.5 bg-red-50 text-red-600 rounded-full">{{ $dosen_perlu_pembinaan->getKategori() }}</span>
+            <div class="flex items-center space-x-4">
+                <div class="w-16 h-16 rounded-full bg-red-50 border-2 border-red-300 flex items-center justify-center overflow-hidden">
+                    @if($bottom->foto)  {{-- ← Pakai $bottom, bukan $dosen_perlu_pembinaan --}}
+                        <img src="{{ Storage::url($bottom->foto) }}" alt="{{ $bottom->nama }}" class="w-full h-full object-cover">
+                    @else
+                        <span class="text-red-500 text-xl font-bold">{{ substr($bottom->nama, 0, 2) }}</span>
+                    @endif
+                </div>
+                <div>
+                    <p class="font-bold text-navy text-lg">{{ $bottom->nama }}</p>
+                    <p class="text-sm text-gray-500">{{ $bottom->program_studi }}</p>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <span class="text-red-500 font-bold text-xl">{{ number_format($bottom->getRataRata(), 2) }}</span>
+                        <span class="text-xs px-2 py-0.5 bg-red-50 text-red-600 rounded-full">{{ $bottom->getKategori() }}</span>
+                    </div>
                 </div>
             </div>
+            <div class="mt-3 pt-3 border-t border-gray-100">
+                <p class="text-xs text-gray-500">Total Voting: {{ $bottom->getTotalVoting() }} mahasiswa</p>
+            </div>
         </div>
-        <div class="mt-3 pt-3 border-t border-gray-100">
-            <p class="text-xs text-gray-500">Total Voting: {{ $dosen_perlu_pembinaan->getTotalVoting() }} mahasiswa</p>
-        </div>
-    </div>
     @endif
 </div>
 
@@ -136,7 +140,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h4 class="font-semibold text-navy mb-4">🏅 Top 3 Dosen</h4>
         <div class="space-y-4">
-            @foreach($top_dosen as $index => $dosen)
+            @foreach($topDosen as $index => $dosen)
             <div class="flex items-center space-x-3 p-3 rounded-lg {{ $index == 0 ? 'bg-gold-10' : ($index == 1 ? 'bg-gray-50' : 'bg-orange-50') }}">
                 <span class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
                     {{ $index == 0 ? 'rank-1' : ($index == 1 ? 'rank-2' : 'rank-3') }}">

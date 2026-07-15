@@ -12,37 +12,40 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // === STATISTIK UTAMA ===
+        $totalVoting = Voting::count();
+        $totalMahasiswaVoting = Voting::distinct('mahasiswa_id')->count();
+        $rataRataKepuasan = Voting::avg('rata_rata') ?? 0;
+        $totalDosen = Dosen::count();
 
-
-        // Dosen terbaik (top 3)
+        // === DOSEN TERBAIK (TOP 3) ===
         $dosenTerbaik = Dosen::withCount('votings')
             ->withAvg('votings', 'rata_rata')
+            ->having('votings_count', '>=', 1)
             ->orderByDesc('votings_avg_rata_rata')
             ->limit(3)
             ->get();
 
-        // Dosen perlu pembinaan (bottom 3 dengan minimal 5 voting)
+        // === DOSEN PERLU PEMBINAAN (BOTTOM 3) ===
         $dosenPerluPembinaan = Dosen::withCount('votings')
             ->withAvg('votings', 'rata_rata')
-            ->having('votings_count', '>=', 5)
+            ->having('votings_count', '>=', 5)  // Minimal 5 voting agar valid
             ->orderBy('votings_avg_rata_rata')
             ->limit(3)
             ->get();
 
-        $data = [
-            'total_voting' => Voting::count(),
-            'rata_rata_kepuasan' => Voting::avg('rata_rata') ?? 0,
-            'dosen_terbaik' => $dosenTerbaik,
-            'dosen_perlu_pembinaan' => $dosenPerluPembinaan,
-            'total_mahasiswa_voting' => Voting::distinct('mahasiswa_id')->count(),
-        ];
+        // === TOP 3 DOSEN UNTUK SIDEBAR (sama dengan dosenTerbaik) ===
+        $topDosen = $dosenTerbaik;
 
+        // === KIRIM KE VIEW ===
         return view('pimpinan.dashboard', compact(
             'totalVoting',
             'totalMahasiswaVoting',
             'rataRataKepuasan',
+            'totalDosen',
             'dosenTerbaik',
-            'dosenPerluPembinaan','data'
+            'dosenPerluPembinaan',
+            'topDosen'
         ));
     }
 }
