@@ -27,7 +27,7 @@
                     </div>
                     <div class="flex justify-between text-sm mt-2">
                         <span class="text-gray-500">Kelas</span>
-                        <span class="font-semibold text-navy">{{ $mahasiswa->kelas ?? '-' }}</span>
+                        <span class="font-semibold text-navy">{{ $mahasiswa->semester.' '.$mahasiswa->kelas ?? '-' }}</span>
                     </div>
                     <div class="flex justify-between text-sm mt-2">
                         <span class="text-gray-500">Status Voting</span>

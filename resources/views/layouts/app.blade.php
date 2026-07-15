@@ -25,7 +25,7 @@
         @include('layouts.navbar')
 
         <!-- Main Content Area -->
-        <div class="flex flex-1 overflow-hidden">
+        <div class="flex flex-1">
             <!-- Sidebar -->
             @include('layouts.sidebar')
 

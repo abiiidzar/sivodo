@@ -1,64 +1,123 @@
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Profile Information') }}
-        </h2>
+<form method="post" action="{{ route('profile.update') }}" class="space-y-4" enctype="multipart/form-data">
+    @csrf
+    @method('patch')
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
-    </header>
+    <!-- Nama -->
+    <div>
+        <label for="nama" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+        <input type="text" id="nama" name="nama" value="{{ old('nama', Auth::user()->nama) }}"
+               class="mt-1 w-full rounded-lg border-gray-200 focus:border-gold focus:ring-gold login-input" required>
+        @error('nama')
+            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+        @enderror
+    </div>
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
-        @csrf
-    </form>
+    <!-- Username -->
+    <div>
+        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+        <input type="text" id="username" name="username" value="{{ old('username', Auth::user()->username) }}"
+               class="mt-1 w-full rounded-lg border-gray-200 focus:border-gold focus:ring-gold login-input" required>
+        @error('username')
+            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+        @enderror
+    </div>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
-        @csrf
-        @method('patch')
+    <!-- Email -->
+    <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+        <input type="email" id="email" name="email" value="{{ old('email', Auth::user()->email) }}"
+               class="mt-1 w-full rounded-lg border-gray-200 focus:border-gold focus:ring-gold login-input" required>
+        @error('email')
+            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+        @enderror
+    </div>
 
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div>
+    <!-- No HP -->
+    <div>
+        <label for="no_hp" class="block text-sm font-medium text-gray-700">Nomor HP</label>
+        <input type="text" id="no_hp" name="no_hp" value="{{ old('no_hp', Auth::user()->no_hp) }}"
+               class="mt-1 w-full rounded-lg border-gray-200 focus:border-gold focus:ring-gold login-input">
+        @error('no_hp')
+            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+        @enderror
+    </div>
 
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
-                </div>
+    <!-- Foto -->
+    <div>
+        <label for="foto" class="block text-sm font-medium text-gray-700">Foto Profil</label>
+        <div class="mt-1 flex items-center space-x-4">
+            @if(Auth::user()->foto)
+                <img src="{{ Storage::url(Auth::user()->foto) }}" alt="Foto" class="w-16 h-16 rounded-full object-cover border border-gray-200">
             @endif
+            <input type="file" id="foto" name="foto" accept="image/*"
+                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold-10 file:text-gold hover:file:bg-gold-20">
         </div>
+        @error('foto')
+            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+        @enderror
+    </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-            @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
-            @endif
+    <!-- Hidden fields untuk data spesifik role -->
+    @if(Auth::user()->isMahasiswa())
+        @php $mahasiswa = Auth::user()->mahasiswa; @endphp
+        <!-- Data Mahasiswa (readonly) -->
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">NIM</label>
+                <input type="text" value="{{ $mahasiswa->nim ?? '-' }}" readonly
+                       class="mt-1 w-full rounded-lg border-gray-200 bg-gray-50 text-gray-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Program Studi</label>
+                <input type="text" value="{{ $mahasiswa->program_studi ?? '-' }}" readonly
+                       class="mt-1 w-full rounded-lg border-gray-200 bg-gray-50 text-gray-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Semester</label>
+                <input type="text" value="Semester {{ $mahasiswa->semester ?? '-' }}" readonly
+                       class="mt-1 w-full rounded-lg border-gray-200 bg-gray-50 text-gray-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Kelas</label>
+                <input type="text" value="{{ $mahasiswa->kelas ?? '-' }}" readonly
+                       class="mt-1 w-full rounded-lg border-gray-200 bg-gray-50 text-gray-500">
+            </div>
         </div>
-    </form>
-</section>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Status Voting</label>
+            <input type="text" value="{{ $mahasiswa->status_voting ?? 'Belum' }}" readonly
+                   class="mt-1 w-full rounded-lg border-gray-200 bg-gray-50 {{ ($mahasiswa->status_voting ?? 'Belum') == 'Sudah' ? 'text-emerald-600' : 'text-red-500' }}">
+        </div>
+    @endif
+
+    @if(Auth::user()->isAdmin())
+        <!-- Data Admin (tambah field opsional) -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Role</label>
+            <input type="text" value="{{ ucfirst(Auth::user()->role) }}" readonly
+                   class="mt-1 w-full rounded-lg border-gray-200 bg-gray-50 text-gray-500">
+        </div>
+    @endif
+
+    @if(Auth::user()->isPimpinan())
+        <!-- Data Pimpinan -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Role</label>
+            <input type="text" value="{{ ucfirst(Auth::user()->role) }}" readonly
+                   class="mt-1 w-full rounded-lg border-gray-200 bg-gray-50 text-gray-500">
+        </div>
+    @endif
+
+    <div class="flex items-center gap-4 pt-4">
+        <button type="submit" class="px-6 py-2.5 bg-navy text-white rounded-lg hover:bg-navy/90 transition font-medium">
+            Simpan Perubahan
+        </button>
+
+        @if (session('status') === 'profile-updated')
+            <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 3000)"
+               class="text-sm text-emerald-600">
+                Profil berhasil diperbarui!
+            </p>
+        @endif
+    </div>
+</form>
