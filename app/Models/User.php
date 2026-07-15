@@ -38,6 +38,25 @@ class User extends Authenticatable
     {
         return $this->hasOne(Mahasiswa::class);
     }
+    public function getVotingProgress()
+    {
+        if (!$this->isMahasiswa()) {
+            return 0;
+        }
+
+        $mahasiswa = $this->mahasiswa;
+        if (!$mahasiswa) {
+            return 0;
+        }
+
+        $totalDosen = Dosen::count();
+        if ($totalDosen === 0) {
+            return 0;
+        }
+
+        $sudahVoting = Voting::where('mahasiswa_id', $mahasiswa->id)->count();
+        return round(($sudahVoting / $totalDosen) * 100);
+    }
 
     // Relasi 1:N dengan ActivityLog
     public function activityLogs()

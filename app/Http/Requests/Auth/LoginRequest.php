@@ -19,9 +19,18 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['nullable', 'string'],
-            'email' => ['nullable', 'email'],
+            'login' => ['required', 'string'], // Field tunggal untuk username atau email
             'password' => ['required', 'string'],
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     */
+    public function attributes(): array
+    {
+        return [
+            'login' => 'username atau email',
         ];
     }
 
@@ -29,28 +38,30 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $loginValue = $this->input('username') ?? $this->input('email');
+        $loginValue = $this->input('login');
         $password = $this->input('password');
+        $remember = $this->boolean('remember');
 
-        $attempts = [];
+        // Tentukan apakah login menggunakan email atau username
+        $field = filter_var($loginValue, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        if ($loginValue !== null) {
-            $attempts[] = ['email' => $loginValue, 'password' => $password];
-            $attempts[] = ['username' => $loginValue, 'password' => $password];
+        // Coba login
+        if (Auth::attempt([$field => $loginValue, 'password' => $password], $remember)) {
+            RateLimiter::clear($this->throttleKey());
+            return;
         }
 
-        foreach ($attempts as $credentials) {
-            if (Auth::attempt($credentials, $this->boolean('remember'))) {
-                RateLimiter::clear($this->throttleKey());
-
-                return;
-            }
+        // Jika gagal, coba dengan field yang lain (untuk berjaga-jaga)
+        $otherField = $field === 'email' ? 'username' : 'email';
+        if (Auth::attempt([$otherField => $loginValue, 'password' => $password], $remember)) {
+            RateLimiter::clear($this->throttleKey());
+            return;
         }
 
         RateLimiter::hit($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'username' => trans('auth.failed'),
+            'login' => trans('auth.failed'),
         ]);
     }
 
@@ -65,27 +76,15 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'username' => trans('auth.throttle', [
+            'login' => trans('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
         ]);
     }
 
-    public function prepareForValidation()
-    {
-        $loginValue = $this->input('username') ?? $this->input('email');
-
-        $this->merge([
-            'username' => $loginValue,
-            'email' => $loginValue,
-        ]);
-    }
-
     public function throttleKey(): string
     {
-        $loginValue = (string) ($this->input('username') ?? $this->input('email') ?? '');
-
-        return Str::transliterate(Str::lower($loginValue) . '|' . $this->ip());
+        return Str::transliterate(Str::lower($this->input('login')) . '|' . $this->ip());
     }
 }

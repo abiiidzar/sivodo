@@ -24,21 +24,15 @@
         <!-- Navbar -->
         @include('layouts.navbar')
 
-        <div class="flex flex-1">
+        <!-- Main Content Area -->
+        <div class="flex flex-1 overflow-hidden">
             <!-- Sidebar -->
             @include('layouts.sidebar')
 
             <!-- Main Content -->
-            <main class="flex-1 p-4 md:p-6 lg:p-8">
+            <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
                 <div class="max-w-7xl mx-auto">
-                    @if(isset($header))
-                        <div class="mb-6">
-                            <h1 class="text-2xl font-bold text-navy">{{ $header }}</h1>
-                        </div>
-                    @endif
-
-                    <!-- Page Content -->
-                    {{ $slot }}
+                    @yield('content')
                 </div>
             </main>
         </div>
