@@ -2,7 +2,7 @@
 
 
 
-\*\*PT Lentera Edukasi ENBI Nusantara - Kelompok 1\*\*
+\*\*PT Lentera Edukasi ENBI Nusantara - Kelompok 2\*\*
 
 
 
