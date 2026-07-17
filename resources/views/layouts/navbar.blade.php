@@ -1,5 +1,5 @@
 <nav class="navbar-sivodo sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full px-4 md:px-8 lg:px-12">
         <div class="flex items-center justify-between h-16">
             <!-- Logo & Brand -->
             <div class="flex items-center space-x-3">
@@ -8,7 +8,7 @@
                     class="h-10 w-auto">
                 <div>
                     <h1 class="text-white font-bold text-lg leading-tight">SIVODO</h1>
-                    <p class="text-blue-muda text-xs">PT. Lentera Edukasi ENBI</p>
+                    <p class="text-blue-muda text-xs">PT. Lentera Edukasi ENBI Nusantara</p>
                 </div>
             </div>
 
