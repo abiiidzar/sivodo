@@ -1,8 +1,8 @@
-\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
+F\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
 
 
 
-\*\*PT Lentera Edukasi ENBI Nusantara - Kelompok 2\*\*
+\*\*PT Lentera Edukasi ENBI Nusantara - Kelompok 1\*\*
 
 
 
@@ -728,7 +728,7 @@
 
 ┌─────────────────────────────────────────────────────┐
 
-│ Tentukan Kategori:                                 │
+│ Tentukan Kategori:                                		      │
 
 │ 4.50 - 5.00 → Sangat Memuaskan                     │
 
@@ -788,13 +788,13 @@
 
 ```
 
-┌────────┐      ┌────────┐      ┌────────┐      ┌────────┐
+     ┌────────┐      ┌────────┐      ┌────────┐      ┌────────┐
 
-│ User   │      │Login   │      │ Auth   │      │Database│
+     │ User   │      │Login   │      │ Auth   │      │Database│
 
-│        │      │Page    │      │Service │      │        │
+     │        │      │Page    │      │Service │      │        │
 
-└───┬────┘      └───┬────┘      └───┬────┘      └───┬────┘
+     └───┬────┘      └───┬────┘      └───┬────┘      └───┬────┘
 
 &#x20;   │               │               │               │
 
@@ -862,13 +862,13 @@
 
 ```
 
-┌────────┐      ┌────────┐      ┌────────┐      ┌────────┐      ┌────────┐
+     ┌────────┐      ┌────────┐      ┌────────┐      ┌────────┐      ┌────────┐
 
-│Mhs     │      │Voting  │      │Voting  │      │Database│      │Skor    │
+     │Mhs     │      │Voting  │      │Voting  │      │Database│      │Skor    │
 
-│        │      │Page    │      │Service │      │        │      │Service │
+     │        │      │Page    │      │Service │      │        │      │Service │
 
-└───┬────┘      └───┬────┘      └───┬────┘      └───┬────┘      └───┬────┘
+     └───┬────┘      └───┬────┘      └───┬────┘      └───┬────┘      └───┬────┘
 
 &#x20;   │               │               │               │               │
 
@@ -1004,13 +1004,13 @@
 
 ```
 
-┌────────┐      ┌────────┐      ┌────────┐      ┌────────┐
+     ┌────────┐      ┌────────┐      ┌────────┐      ┌────────┐
 
-│ Admin  │      │CRUD    │      │Service │      │Database│
+     │ Admin  │      │CRUD    │      │Service │      │Database│
 
-│        │      │Page    │      │        │      │        │
+     │        │      │Page    │      │        │      │        │
 
-└───┬────┘      └───┬────┘      └───┬────┘      └───┬────┘
+     └───┬────┘      └───┬────┘      └───┬────┘      └───┬────┘
 
 &#x20;   │               │               │               │
 
@@ -1344,25 +1344,25 @@
 
 
 
-| Class A | Class B | Relasi | Deskripsi |
+| Class A   | Class B | Relasi | Deskripsi |
 
-|---------|---------|--------|-----------|
+|---------  |---------|--------|-----------|
 
-| User | Mahasiswa | 1 : 1 | Satu user memiliki satu data mahasiswa |
+| User      | Mahasiswa    | 1 : 1 | Satu user memiliki satu data mahasiswa |
 
-| Mahasiswa | Voting | 1 : N | Satu mahasiswa bisa banyak voting |
+| Mahasiswa | Voting       | 1 : N | Satu mahasiswa bisa banyak voting |
 
-| Dosen | MataKuliah | 1 : N | Satu dosen mengajar banyak mata kuliah |
+| Dosen     | MataKuliah   | 1 : N | Satu dosen mengajar banyak mata kuliah |
 
-| MataKuliah | Voting | 1 : N | Satu mata kuliah memiliki banyak voting |
+| MataKuliah| Voting       | 1 : N | Satu mata kuliah memiliki banyak voting |
 
-| Semester | Voting | 1 : N | Satu semester memiliki banyak voting |
+| Semester  | Voting       | 1 : N | Satu semester memiliki banyak voting |
 
-| Voting | VotingDetail | 1 : N | Satu voting memiliki banyak detail |
+| Voting    | VotingDetail | 1 : N | Satu voting memiliki banyak detail |
 
-| Pertanyaan | VotingDetail | 1 : N | Satu pertanyaan digunakan banyak detail |
+| Pertanyaan| VotingDetail | 1 : N | Satu pertanyaan digunakan banyak detail |
 
-| User | ActivityLog | 1 : N | Satu user memiliki banyak aktivitas |
+| User      | ActivityLog  | 1 : N | Satu user memiliki banyak aktivitas |
 
 
 
