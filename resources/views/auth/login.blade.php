@@ -53,16 +53,17 @@
             <div class="w-20 h-20 rounded-full bg-[rgba(201,162,39,.15)] border border-[#c9a227] flex items-center justify-center mx-auto">
 
                 <svg
-                    class="w-10 h-10 text-[#c9a227]"
+                    xmlns="http://www.w3.org/2000/svg"
                     fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
                     stroke="currentColor"
-                    stroke-width="2"
-                    viewBox="0 0 24 24">
+                    class="w-10 h-10 text-[#c9a227]">
 
                     <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        d="M5.121 17.804A9 9 0 1118.364 4.56M15 11a3 3 0 11-6 0 3 3 0 016 0zm-3 4c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"/>
+                        d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.964 0a9 9 0 1 0-11.964 0m11.964 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15.75 9.75A3.75 3.75 0 1 1 8.25 9.75a3.75 3.75 0 0 1 7.5 0Z" />
 
                 </svg>
 
@@ -112,7 +113,7 @@
 
                     <label class="block mb-2 font-semibold text-[#1a2744]">
 
-                        Password
+                        password
 
                     </label>
 
