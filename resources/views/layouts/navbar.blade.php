@@ -1,5 +1,5 @@
 <nav class="navbar-sivodo sticky top-0 z-50">
-    <div class="w-full px-4 md:px-8 lg:px-12">
+    <div class="w-full px-6 md:px-8">
         <div class="flex items-center justify-between h-16">
             <!-- Logo & Brand -->
             <div class="flex items-center space-x-3">
@@ -30,17 +30,7 @@
                             $progress = round(($sudahVoting / $totalDosen) * 100);
                         }
                     @endphp
-                    <div class="hidden md:flex items-center flex-1 max-w-md mx-8">
-                        <div class="w-full">
-                            <div class="flex justify-between text-xs text-white/70 mb-1">
-                                <span>Progress Voting</span>
-                                <span class="text-gold font-bold">{{ $progress }}%</span>
-                            </div>
-                            <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-gold rounded-full transition-all duration-500" style="width: {{ $progress }}%"></div>
-                            </div>
-                        </div>
-                    </div>
+                    
                 @endif
             @endauth
 
