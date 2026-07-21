@@ -29,25 +29,26 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Catat aktivitas login
-        ActivityLog::logActivity(
-            Auth::id(),
-            'Login',
-            'User ' . Auth::user()->nama . ' login ke sistem'
-        );
-
-        // Redirect berdasarkan role
+        // Ambil user setelah authenticate
         $user = Auth::user();
 
+        // Catat aktivitas login - PAKAI CREATE LANGSUNG
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'aktivitas' => 'Login',
+            'deskripsi' => 'User ' . $user->nama . ' login ke sistem',
+        ]);
+
+        // Redirect berdasarkan role
         if ($user->isAdmin()) {
-            return redirect()->intended(route('admin.dashboard'));
+            return redirect()->route('admin.dashboard');
         } elseif ($user->isPimpinan()) {
-            return redirect()->intended(route('pimpinan.dashboard'));
+            return redirect()->route('pimpinan.dashboard');
         } elseif ($user->isMahasiswa()) {
-            return redirect()->intended(route('mahasiswa.dashboard'));
+            return redirect()->route('mahasiswa.dashboard');
         }
 
-        return redirect()->intended(route('dashboard'));
+        return redirect('/');
     }
 
     /**
@@ -55,12 +56,13 @@ class AuthenticatedSessionController extends Controller
      */
      public function destroy(Request $request): RedirectResponse
     {
-        // Catat aktivitas logout
-        if (Auth::check()) {
+        $user = Auth::user();
+
+        if ($user) {
             ActivityLog::create([
-                'user_id' => Auth::id(),
+                'user_id' => $user->id,
                 'aktivitas' => 'Logout',
-                'deskripsi' => 'User ' . Auth::user()->nama . ' logout dari sistem',
+                'deskripsi' => 'User ' . $user->nama . ' logout dari sistem',
             ]);
         }
 

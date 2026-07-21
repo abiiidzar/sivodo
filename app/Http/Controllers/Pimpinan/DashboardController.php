@@ -5,47 +5,69 @@ namespace App\Http\Controllers\Pimpinan;
 use App\Http\Controllers\Controller;
 use App\Models\Dosen;
 use App\Models\Voting;
-use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // === STATISTIK UTAMA ===
-        $totalVoting = Voting::count();
-        $totalMahasiswaVoting = Voting::distinct('mahasiswa_id')->count();
-        $rataRataKepuasan = Voting::avg('rata_rata') ?? 0;
-        $totalDosen = Dosen::count();
+        // Statistik
+        $total_voting = Voting::count();
+        $rata_rata_kepuasan = Voting::avg('rata_rata') ?? 0;
+        $total_mahasiswa_voting = Voting::distinct('mahasiswa_id')->count();
+        $total_dosen = Dosen::count();
 
-        // === DOSEN TERBAIK (TOP 3) ===
-        $dosenTerbaik = Dosen::withCount('votings')
-            ->withAvg('votings', 'rata_rata')
-            ->having('votings_count', '>=', 1)
-            ->orderByDesc('votings_avg_rata_rata')
-            ->limit(3)
-            ->get();
+        // Dosen dengan nilai tertinggi
+        $dosen_terbaik = Dosen::with('votings')
+            ->get()
+            ->filter(function ($dosen) {
+                return $dosen->votings->count() > 0;
+            })
+            ->sortByDesc(function ($dosen) {
+                return $dosen->getRataRata();
+            })
+            ->first();
 
-        // === DOSEN PERLU PEMBINAAN (BOTTOM 3) ===
-        $dosenPerluPembinaan = Dosen::withCount('votings')
-            ->withAvg('votings', 'rata_rata')
-            ->having('votings_count', '>=', 5)  // Minimal 5 voting agar valid
-            ->orderBy('votings_avg_rata_rata')
-            ->limit(3)
-            ->get();
+        // Dosen perlu pembinaan (nilai terendah)
+        $dosen_perlu_pembinaan = Dosen::with('votings')
+            ->get()
+            ->filter(function ($dosen) {
+                return $dosen->votings->count() > 0;
+            })
+            ->sortBy(function ($dosen) {
+                return $dosen->getRataRata();
+            })
+            ->first();
 
-        // === TOP 3 DOSEN UNTUK SIDEBAR (sama dengan dosenTerbaik) ===
-        $topDosen = $dosenTerbaik;
+        // Top 3 Dosen
+        $top_dosen = Dosen::with('votings')
+            ->get()
+            ->filter(function ($dosen) {
+                return $dosen->votings->count() > 0;
+            })
+            ->sortByDesc(function ($dosen) {
+                return $dosen->getRataRata();
+            })
+            ->take(3);
 
-        // === KIRIM KE VIEW ===
+        // Data untuk chart
+        $chartLabels = [];
+        $chartData = [];
+        foreach ($top_dosen as $dosen) {
+            $chartLabels[] = $dosen->nama;
+            $chartData[] = $dosen->getRataRata();
+        }
+
         return view('pimpinan.dashboard', compact(
-            'totalVoting',
-            'totalMahasiswaVoting',
-            'rataRataKepuasan',
-            'totalDosen',
-            'dosenTerbaik',
-            'dosenPerluPembinaan',
-            'topDosen'
+            'total_voting',
+            'rata_rata_kepuasan',
+            'total_mahasiswa_voting',
+            'total_dosen',
+            'dosen_terbaik',
+            'dosen_perlu_pembinaan',
+            'top_dosen',
+            'chartLabels',
+            'chartData'
         ));
     }
 }

@@ -75,9 +75,22 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/laporan/dosen', [LaporanController::class, 'dosen'])->name('laporan.dosen');
     Route::get('/laporan/matakuliah', [LaporanController::class, 'matakuliah'])->name('laporan.matakuliah');
     Route::get('/laporan/prodi', [LaporanController::class, 'prodi'])->name('laporan.prodi');
-    Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
-    Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan.export-excel');
 
+    // Export Laporan Dosen
+    Route::get('/laporan/export-pdf-dosen', [LaporanController::class, 'exportPdfDosen'])->name('laporan.export-pdf-dosen');
+    Route::get('/laporan/export-excel-dosen', [LaporanController::class, 'exportExcelDosen'])->name('laporan.export-excel-dosen');
+
+    // Export Laporan Mata Kuliah
+    Route::get('/laporan/export-pdf-matakuliah', [LaporanController::class, 'exportPdfMatakuliah'])->name('laporan.export-pdf-matakuliah');
+    Route::get('/laporan/export-excel-matakuliah', [LaporanController::class, 'exportExcelMatakuliah'])->name('laporan.export-excel-matakuliah');
+
+    // Export Laporan Program Studi
+    Route::get('/laporan/export-pdf-prodi', [LaporanController::class, 'exportPdfProdi'])->name('laporan.export-pdf-prodi');
+    Route::get('/laporan/export-excel-prodi', [LaporanController::class, 'exportExcelProdi'])->name('laporan.export-excel-prodi');
+
+    // Export Ranking
+    Route::get('/laporan/export-pdf-ranking', [LaporanController::class, 'exportPdfRanking'])->name('laporan.export-pdf-ranking');
+    Route::get('/laporan/export-excel-ranking', [LaporanController::class, 'exportExcelRanking'])->name('laporan.export-excel-ranking');
 
     // Grafik & Ranking
     Route::get('/grafik', [LaporanController::class, 'grafik'])->name('grafik');
@@ -155,6 +168,5 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
 
 require __DIR__.'/auth.php';
