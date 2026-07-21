@@ -37,6 +37,27 @@ class VotingController extends Controller
             $query->where('semester', $semesterAktif->semester);
         }])->get();
 
+        // === HITUNG STATISTIK ===
+        $total_dosen = $dosens->count();
+
+        $sudah_voting = 0;
+        $statusVoting = [];
+        foreach ($dosens as $dosen) {
+            $sudah = Voting::where('mahasiswa_id', $mahasiswa->id)
+                ->where('dosen_id', $dosen->id)
+                ->where('semester_id', $semesterAktif->id ?? 0)
+                ->exists();
+
+            $statusVoting[$dosen->id] = $sudah;
+
+            if ($sudah) {
+                $sudah_voting++;
+            }
+        }
+
+        $belum_voting = $total_dosen - $sudah_voting;
+        $progress = $total_dosen > 0 ? round(($sudah_voting / $total_dosen) * 100) : 0;
+
         // Cek status voting per dosen
         foreach ($dosens as $dosen) {
             $dosen->sudahVoting = Voting::where('mahasiswa_id', $mahasiswa->id)
@@ -45,7 +66,7 @@ class VotingController extends Controller
                 ->exists();
         }
 
-        return view('mahasiswa.voting.index', compact('dosens', 'semesterAktif', 'mahasiswa'));
+        return view('mahasiswa.voting.index', compact('dosens', 'semesterAktif', 'mahasiswa','total_dosen','sudah_voting','belum_voting','progress'));
     }
 
     // Halaman form voting untuk dosen tertentu

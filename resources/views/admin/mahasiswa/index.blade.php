@@ -38,6 +38,60 @@
         </div>
     @endif
 
+    <!-- Progress Voting Card -->
+    {{-- <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex-1 w-full">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-semibold text-navy">Progress Voting Mahasiswa</h4>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="text-emerald-600 font-medium">{{ $sudahVoting ?? 0 }} Sudah</span>
+                        <span class="text-gray-300">|</span>
+                        <span class="text-red-500 font-medium">{{ $belumVoting ?? 0 }} Belum</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar 2 Warna -->
+                <div class="w-full h-4 bg-gray-200 rounded-full overflow-hidden flex">
+                    <!-- Bagian Hijau (Sudah Voting) -->
+                    @if(($sudahPercent ?? 0) > 0)
+                        <div class="h-full bg-emerald-500 transition-all duration-700 flex items-center justify-center text-xs text-white font-medium"
+                             style="width: {{ $sudahPercent ?? 0 }}%">
+                            @if(($sudahPercent ?? 0) > 8)
+                                {{ $sudahPercent ?? 0 }}%
+                            @endif
+                        </div>
+                    @endif
+
+                    <!-- Bagian Merah (Belum Voting) -->
+                    @if(($belumPercent ?? 0) > 0)
+                        <div class="h-full bg-red-500 transition-all duration-700 flex items-center justify-center text-xs text-white font-medium"
+                             style="width: {{ $belumPercent ?? 0 }}%">
+                            @if(($belumPercent ?? 0) > 8)
+                                {{ $belumPercent ?? 0 }}%
+                            @endif
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Keterangan -->
+                <div class="flex flex-wrap items-center justify-between mt-3">
+                    <div class="flex items-center gap-4 text-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                            <span class="text-gray-600">Sudah Voting: <strong class="text-emerald-700">{{ $sudahVoting ?? 0 }}</strong> mahasiswa</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                            <span class="text-gray-600">Belum Voting: <strong class="text-red-700">{{ $belumVoting ?? 0 }}</strong> mahasiswa</span>
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-400">Total: {{ $totalDosen ?? 0 }} mahasiswa</span>
+                </div>
+            </div>
+        </div>
+    </div> --}}
+
     <!-- Toolbar -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -180,10 +234,53 @@
                             </span>
                         </td>
                         <td class="py-3 px-4">
-                            <span class="px-3 py-1 rounded-full text-xs font-medium
-                                {{ $mahasiswa->status_voting == 'Sudah' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700' }}">
-                                {{ $mahasiswa->status_voting }}
-                            </span>
+                            <!-- Status Voting dengan Progress Bar 2 Warna per Mahasiswa -->
+                            <div class="flex flex-col gap-1 min-w-[150px]">
+                                <!-- Badge Status -->
+                                {{-- <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 rounded-full text-xs font-medium
+                                        {{ $mahasiswa->status_voting == 'Sudah' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700' }}">
+                                        {{ $mahasiswa->status_voting }}
+                                    </span>
+                                    @if($mahasiswa->status_voting == 'Sudah')
+                                        <span class="text-[10px] text-gray-400">
+                                            {{ $mahasiswa->votings->count() }} dosen
+                                        </span>
+                                    @endif
+                                </div> --}}
+
+                                <!-- Progress Bar 2 Warna per Mahasiswa -->
+                                @php
+                                    $totalDosenForProgress = \App\Models\Dosen::count();
+                                    $votingCount = $mahasiswa->votings->count();
+                                    $sudahPercentMhs = $totalDosenForProgress > 0 ? round(($votingCount / $totalDosenForProgress) * 100) : 0;
+                                    $belumPercentMhs = $totalDosenForProgress > 0 ? 100 - $sudahPercentMhs : 0;
+                                @endphp
+
+                                <div class="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden flex">
+                                    <!-- Hijau = Sudah Divoting -->
+                                    @if($sudahPercentMhs > 0)
+                                        <div class="h-full bg-emerald-500 transition-all duration-500"
+                                             style="width: {{ $sudahPercentMhs }}%"></div>
+                                    @endif
+                                    <!-- Merah = Belum Divoting -->
+                                    @if($belumPercentMhs > 0)
+                                        <div class="h-full bg-red-400 transition-all duration-500"
+                                             style="width: {{ $belumPercentMhs }}%"></div>
+                                    @endif
+                                </div>
+
+                                <!-- Keterangan -->
+                                <div class="flex items-center justify-between text-[10px] text-gray-400">
+                                    <span>
+                                        <span class="text-emerald-600 font-medium">{{ $votingCount }}</span>
+                                        <span class="text-gray-400">/</span>
+                                        <span class="text-gray-500">{{ $totalDosenForProgress }}</span>
+                                        <span class="text-gray-400"> dosen</span>
+                                    </span>
+                                    <span class="text-gray-400">{{ $sudahPercentMhs }}%</span>
+                                </div>
+                            </div>
                         </td>
                         <td class="py-3 px-4">
                             <div class="flex items-center space-x-2">

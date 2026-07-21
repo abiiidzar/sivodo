@@ -32,7 +32,7 @@
                     <div class="flex justify-between text-sm mt-2">
                         <span class="text-gray-500">Status Voting</span>
                         <span class="font-semibold {{ $mahasiswa->status_voting == 'Sudah' ? 'text-emerald-600' : 'text-red-500' }}">
-                            {{ $mahasiswa->status_voting ?? 'Belum' }}
+                            {{ $sudah_voting ?? 0 }}/{{ $total_dosen ?? 0 }} {{ $mahasiswa->status_voting ?? 'Belum' }}
                         </span>
                     </div>
                 </div>
