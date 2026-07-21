@@ -8,7 +8,7 @@
                     class="h-10 w-auto">
                 <div>
                     <h1 class="text-white font-bold text-lg leading-tight">SIVODO</h1>
-                    <p class="text-blue-muda text-xs">PT. Lentera Edukasi ENBI</p>
+                    <p class="text-blue-muda text-xs">PT. Lentera Edukasi ENBI Nusantara</p>
                 </div>
             </div>
 
