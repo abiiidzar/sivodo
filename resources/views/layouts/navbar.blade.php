@@ -1,5 +1,5 @@
 <nav class="navbar-sivodo sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full px-4 md:px-8 lg:px-12">
         <div class="flex items-center justify-between h-16">
             <!-- Logo & Brand -->
             <div class="flex items-center space-x-3">
