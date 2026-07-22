@@ -9,6 +9,8 @@ use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Dosen;
+
 
 class MahasiswaController extends Controller
 {
@@ -46,7 +48,22 @@ class MahasiswaController extends Controller
         // Ambil daftar prodi unik untuk filter
         $prodiList = Mahasiswa::select('program_studi')->distinct()->pluck('program_studi');
 
-        return view('admin.mahasiswa.index', compact('mahasiswas', 'prodiList'));
+        // Data untuk progress voting (total dosen & sudah voting)
+        $totalDosen = Dosen::count();
+        $sudahVoting = Mahasiswa::where('status_voting', 'Sudah')->count();
+        $belumVoting = $totalDosen - $sudahVoting;
+        $sudahPercent = $totalDosen > 0 ? round(($sudahVoting / $totalDosen) * 100) : 0;
+        $belumPercent = $totalDosen > 0 ? round(($belumVoting / $totalDosen) * 100) : 0;
+
+        return view('admin.mahasiswa.index', compact(
+            'mahasiswas',
+            'prodiList',
+            'totalDosen',
+            'sudahVoting',
+            'belumVoting',
+            'sudahPercent',
+            'belumPercent'
+        ));
     }
 
     public function create()
