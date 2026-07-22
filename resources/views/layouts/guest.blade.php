@@ -6,6 +6,8 @@
     <title>{{ config('app.name') }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('img/enbi1.png') }}">
 </head>
 
 <body class="bg-gray-100">
