@@ -16,12 +16,6 @@ class RiwayatController extends Controller
         $query = Voting::with(['dosen', 'mataKuliah', 'semester'])
             ->where('mahasiswa_id', $mahasiswa->id);
 
-        // Filter by semester
-        if ($request->filled('semester')) {
-            $query->where('semester_id', $request->semester);
-        }
-
-        // Filter by dosen
         if ($request->filled('search')) {
             $search = $request->search;
             $query->whereHas('dosen', function ($q) use ($search) {
@@ -31,6 +25,11 @@ class RiwayatController extends Controller
 
         $votings = $query->latest()->paginate(10);
         $votings->appends($request->all());
+
+        // TAMBAHKAN KATEGORI KE SETIAP VOTING
+        foreach ($votings as $voting) {
+            $voting->kategori = $this->getKategori($voting->rata_rata);
+        }
 
         return view('mahasiswa.riwayat.index', compact('votings'));
     }

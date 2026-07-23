@@ -104,7 +104,7 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-gray-100 bg-gray-50">
-                        <th class="text-left py-3 px-4 text-gray-500 font-medium">#</th>
+                        <th class="text-left py-3 px-4 text-gray-500 font-medium">No</th>
                         <th class="text-left py-3 px-4 text-gray-500 font-medium">Kategori</th>
                         <th class="text-left py-3 px-4 text-gray-500 font-medium">Pertanyaan</th>
                         <th class="text-left py-3 px-4 text-gray-500 font-medium">Urutan</th>
