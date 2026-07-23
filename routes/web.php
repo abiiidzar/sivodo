@@ -172,6 +172,14 @@ Route::middleware(['auth', 'role:pimpinan'])->prefix('pimpinan')->name('pimpinan
     Route::get('/laporan/matakuliah', [PimpinanLaporanController::class, 'matakuliah'])->name('laporan.matakuliah');
     Route::get('/laporan/prodi', [PimpinanLaporanController::class, 'prodi'])->name('laporan.prodi');
 
+    // ============ EXPORT LAPORAN MATA KULIAH ============
+    Route::get('/laporan/export-pdf-matakuliah', [LaporanController::class, 'exportPdfMatakuliah'])->name('laporan.export-pdf-matakuliah');
+    Route::get('/laporan/export-excel-matakuliah', [LaporanController::class, 'exportExcelMatakuliah'])->name('laporan.export-excel-matakuliah');
+
+    // ============ EXPORT LAPORAN PROGRAM STUDI ============
+    Route::get('/laporan/export-pdf-prodi', [LaporanController::class, 'exportPdfProdi'])->name('laporan.export-pdf-prodi');
+    Route::get('/laporan/export-excel-prodi', [LaporanController::class, 'exportExcelProdi'])->name('laporan.export-excel-prodi');
+
     // Export
     Route::get('/export/pdf', [ExportController::class, 'pdf'])->name('export.pdf');
     Route::get('/export/excel', [ExportController::class, 'excel'])->name('export.excel');
