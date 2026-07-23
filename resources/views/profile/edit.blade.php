@@ -34,7 +34,7 @@
                             <p class="text-sm font-semibold text-navy">{{ $mahasiswa->kelas ?? '-' }}</p>
                             <p class="text-xs text-gray-400 mt-2">Status Voting</p>
                             <p class="text-sm font-semibold {{ ($mahasiswa->status_voting ?? 'Belum') == 'Sudah' ? 'text-emerald-600' : 'text-red-500' }}">
-                                {{ $mahasiswa->status_voting ?? 'Belum' }}
+                                {{ $sudah_voting ?? 0 }}/{{ $total_dosen ?? 0 }} {{ $mahasiswa->status_voting ?? 'Belum' }}
                             </p>
                         </div>
                     @endif
