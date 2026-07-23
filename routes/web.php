@@ -39,6 +39,21 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
+// ============ REDIRECT ROOT ============
+Route::get('/', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->isPimpinan()) {
+            return redirect()->route('pimpinan.dashboard');
+        } elseif ($user->isMahasiswa()) {
+            return redirect()->route('mahasiswa.dashboard');
+        }
+    }
+    return view('auth.login');
+});
+
 // ============ ADMIN ROUTES ============
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
