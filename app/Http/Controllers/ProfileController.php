@@ -59,11 +59,11 @@ class ProfileController extends Controller
             $mahasiswa = Mahasiswa::where('user_id', $user->id)->first();
             if ($mahasiswa) {
                 $mahasiswa->update([
-                    'nim' => $request->nim,
-                    'nama' => $request->nama,
-                    'program_studi' => $request->program_studi,
-                    'semester' => $request->semester,
-                    'kelas' => $request->kelas,
+                    'nim' => $request->filled('nim') ? $request->nim : $mahasiswa->nim,
+                    'nama' => $request->filled('nama') ? $request->nama : $mahasiswa->nama,
+                    'program_studi' => $request->filled('program_studi') ? $request->program_studi : $mahasiswa->program_studi,
+                    'semester' => $request->filled('semester') ? $request->semester : $mahasiswa->semester,
+                    'kelas' => $request->filled('kelas') ? $request->kelas : $mahasiswa->kelas,
                 ]);
             }
         }

@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Mahasiswa;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileTest extends TestCase
 {
@@ -15,7 +17,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this
-            ->actingAs($user)
+            ->actingAs(Auth::$user)
             ->get('/profile');
 
         $response->assertOk();
@@ -26,7 +28,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this
-            ->actingAs($user)
+            ->actingAs(Auth::$user)
             ->patch('/profile', [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
@@ -43,12 +45,52 @@ class ProfileTest extends TestCase
         $this->assertNull($user->email_verified_at);
     }
 
+    public function test_student_profile_update_preserves_existing_mahasiswa_identity_fields(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'mahasiswa',
+            'nama' => 'Old Name',
+            'username' => 'olduser',
+            'email' => 'old@example.com',
+        ]);
+
+        $mahasiswa = Mahasiswa::create([
+            'user_id' => $user->id,
+            'nim' => '20240001',
+            'nama' => 'Old Name',
+            'program_studi' => 'Teknik Informatika',
+            'semester' => 4,
+            'kelas' => 'A',
+            'status_voting' => 'Belum',
+        ]);
+
+        $response = $this
+            ->actingAs(Auth::$user)
+            ->patch('/profile', [
+                'nama' => 'Updated Name',
+                'username' => 'updateduser',
+                'email' => 'updated@example.com',
+                'no_hp' => '08123456789',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $mahasiswa->refresh();
+
+        $this->assertSame('20240001', $mahasiswa->nim);
+        $this->assertSame('Teknik Informatika', $mahasiswa->program_studi);
+        $this->assertSame(4, $mahasiswa->semester);
+        $this->assertSame('A', $mahasiswa->kelas);
+    }
+
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
     {
         $user = User::factory()->create();
 
         $response = $this
-            ->actingAs($user)
+            ->actingAs(Auth::$user)
             ->patch('/profile', [
                 'name' => 'Test User',
                 'email' => $user->email,
@@ -66,7 +108,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this
-            ->actingAs($user)
+            ->actingAs(Auth::$user)
             ->delete('/profile', [
                 'password' => 'password',
             ]);
@@ -84,7 +126,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this
-            ->actingAs($user)
+            ->actingAs(Auth::$user)
             ->from('/profile')
             ->delete('/profile', [
                 'password' => 'wrong-password',

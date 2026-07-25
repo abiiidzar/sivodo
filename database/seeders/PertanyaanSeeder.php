@@ -17,8 +17,7 @@ class PertanyaanSeeder extends Seeder
             ['kategori' => 'Ketepatan Waktu', 'pertanyaan' => 'Apakah dosen memulai dan mengakhiri perkuliahan tepat waktu?', 'urutan' => 5],
             ['kategori' => 'Objektivitas', 'pertanyaan' => 'Apakah dosen memberikan penilaian secara objektif?', 'urutan' => 6],
             ['kategori' => 'Tugas', 'pertanyaan' => 'Apakah tugas yang diberikan sesuai dengan materi perkuliahan?', 'urutan' => 7],
-            ['kategori' => 'Suasana Belajar', 'pertanyaan' => 'Apakah dosen menciptakan suasana belajar yang nyaman?', 'urutan' => 8],
-            ['kategori' => 'Bimbingan', 'pertanyaan' => 'Apakah dosen memberikan bimbingan dengan baik?', 'urutan' => 9],
+            
         ];
 
         foreach ($pertanyaans as $data) {
