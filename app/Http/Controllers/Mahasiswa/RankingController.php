@@ -4,19 +4,24 @@ namespace App\Http\Controllers\Mahasiswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\Dosen;
+use App\Models\MataKuliah;
 use Illuminate\Http\Request;
 
 class RankingController extends Controller
 {
     public function index(Request $request)
     {
-        $dosens = Dosen::with('votings')->get();
+        $dosens = Dosen::with(['votings', 'mataKuliahs'])->get();
 
         // Hitung rata-rata untuk setiap dosen
         $rankingData = [];
         foreach ($dosens as $dosen) {
             $rata_rata = $dosen->getRataRata();
             $total_voting = $dosen->getTotalVoting();
+            $mataKuliahList = $dosen->mataKuliahs
+                ->pluck('nama')
+                ->filter()
+                ->implode(', ');
 
             // Hanya dosen yang memiliki voting
             if ($total_voting > 0) {
@@ -25,6 +30,7 @@ class RankingController extends Controller
                     'nama' => $dosen->nama,
                     'nidn' => $dosen->nidn,
                     'program_studi' => $dosen->program_studi,
+                    'mata_kuliah' => $mataKuliahList ?: '-',
                     'foto' => $dosen->foto,
                     'rata_rata' => $rata_rata,
                     'total_voting' => $total_voting,
@@ -35,7 +41,17 @@ class RankingController extends Controller
 
         // Sort by rata-rata descending
         usort($rankingData, function ($a, $b) {
-            return $b->rata_rata <=> $a->rata_rata;
+            $rataRataComparison = $b->rata_rata <=> $a->rata_rata;
+            if ($rataRataComparison !== 0) {
+                return $rataRataComparison;
+            }
+
+            $totalVotingComparison = $b->total_voting <=> $a->total_voting;
+            if ($totalVotingComparison !== 0) {
+                return $totalVotingComparison;
+            }
+
+            return $a->nama <=> $b->nama;
         });
 
         // Add rank

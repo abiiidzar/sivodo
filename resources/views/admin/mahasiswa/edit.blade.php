@@ -106,18 +106,30 @@
             <div>
                 <label for="foto" class="block text-sm font-medium text-navy mb-1">Foto</label>
                 <div class="mt-1 flex items-center space-x-4">
-                    <div id="fotoPreview" class="w-24 h-24 rounded-full bg-gray-100 border-2 border-gray-300 flex items-center justify-center overflow-hidden">
+                    <div
+                        id="fotoPreview"
+                        class="w-24 aspect-square rounded-full overflow-hidden border-2 border-gray-300 bg-gray-100 flex items-center justify-center flex-shrink-0">
+
                         @if($mahasiswa->foto)
-                            <img src="{{ Storage::url($mahasiswa->foto) }}" alt="{{ $mahasiswa->nama }}" class="w-full h-full object-cover">
+                            <img
+                                src="{{ Storage::url($mahasiswa->foto) }}"
+                                alt="{{ $mahasiswa->nama }}"
+                                class="w-full h-full object-cover rounded-full">
                         @else
                             <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
                         @endif
                     </div>
-                    <input type="file" id="foto" name="foto" accept="image/*"
-                           class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold-10 file:text-gold hover:file:bg-gold-20"
-                           onchange="previewImage(event)">
+
+                    <input
+                        type="file"
+                        id="foto"
+                        name="foto"
+                        accept="image/*"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold-10 file:text-gold hover:file:bg-gold-20"
+                        onchange="previewImage(event)">
                 </div>
                 <p class="mt-1 text-xs text-gray-400">Format: JPEG, PNG, JPG. Maksimal 2MB. Kosongkan jika tidak ingin mengganti</p>
                 @error('foto')
@@ -157,6 +169,7 @@
         };
         reader.readAsDataURL(event.target.files[0]);
     }
+
 </script>
 @endpush
 @endsection

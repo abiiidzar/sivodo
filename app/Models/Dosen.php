@@ -41,17 +41,39 @@ class Dosen extends Model
         return $this->votings()->avg('rata_rata') ?? 0;
     }
 
+    public static function sortByRanking($dosens)
+    {
+        return $dosens
+            ->filter(function ($dosen) {
+                return $dosen->getTotalVoting() > 0;
+            })
+            ->sort(function ($a, $b) {
+                $rataRataComparison = $b->getRataRata() <=> $a->getRataRata();
+                if ($rataRataComparison !== 0) {
+                    return $rataRataComparison;
+                }
+
+                $totalVotingComparison = $b->getTotalVoting() <=> $a->getTotalVoting();
+                if ($totalVotingComparison !== 0) {
+                    return $totalVotingComparison;
+                }
+
+                return $a->id <=> $b->id;
+            })
+            ->values();
+    }
+
     // Dapatkan peringkat dosen
     public function getRanking()
     {
         $allDosen = Dosen::with('votings')->get();
-        $sorted = $allDosen->sortByDesc(function ($dosen) {
-            return $dosen->getRataRata();
+        $sorted = self::sortByRanking($allDosen);
+
+        $index = $sorted->search(function ($item) {
+            return $item->id === $this->id;
         });
 
-        return $sorted->search(function ($item) {
-            return $item->id === $this->id;
-        }) + 1;
+        return $index === false ? null : $index + 1;
     }
 
     // Kategori berdasarkan rata-rata

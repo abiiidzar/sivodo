@@ -81,7 +81,17 @@ class RankingController extends Controller
         }
 
         usort($rankingData, function ($a, $b) {
-            return $b->rata_rata <=> $a->rata_rata;
+            $rataRataComparison = $b->rata_rata <=> $a->rata_rata;
+            if ($rataRataComparison !== 0) {
+                return $rataRataComparison;
+            }
+
+            $totalVotingComparison = $b->total_voting <=> $a->total_voting;
+            if ($totalVotingComparison !== 0) {
+                return $totalVotingComparison;
+            }
+
+            return $a->nama <=> $b->nama;
         });
 
         $pdf = Pdf::loadView('pimpinan.pdf.ranking', compact('rankingData'));
@@ -110,7 +120,17 @@ class RankingController extends Controller
         }
 
         usort($rankingData, function ($a, $b) {
-            return $b->rata_rata <=> $a->rata_rata;
+            $rataRataComparison = $b->rata_rata <=> $a->rata_rata;
+            if ($rataRataComparison !== 0) {
+                return $rataRataComparison;
+            }
+
+            $totalVotingComparison = $b->total_voting <=> $a->total_voting;
+            if ($totalVotingComparison !== 0) {
+                return $totalVotingComparison;
+            }
+
+            return $a->nama <=> $b->nama;
         });
 
         return Excel::download(new RankingExport($rankingData), 'ranking_dosen_' . date('Y-m-d') . '.xlsx');

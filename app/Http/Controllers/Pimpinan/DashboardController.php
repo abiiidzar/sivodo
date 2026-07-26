@@ -17,43 +17,34 @@ class DashboardController extends Controller
         $total_mahasiswa_voting = Voting::distinct('mahasiswa_id')->count();
         $total_dosen = Dosen::count();
 
+        $sortedDosen = Dosen::sortByRanking(Dosen::with('votings')->get());
+
         // Dosen dengan nilai tertinggi
-        $dosen_terbaik = Dosen::with('votings')
-            ->get()
-            ->filter(function ($dosen) {
-                return $dosen->votings->count() > 0;
-            })
-            ->sortByDesc(function ($dosen) {
-                return $dosen->getRataRata();
-            })
-            ->first();
+        $dosen_terbaik = $sortedDosen->first();
 
         // Dosen perlu pembinaan (nilai terendah)
-        $dosen_perlu_pembinaan = Dosen::with('votings')
-            ->get()
-            ->filter(function ($dosen) {
-                return $dosen->votings->count() > 0;
-            })
-            ->sortBy(function ($dosen) {
-                return $dosen->getRataRata();
-            })
-            ->first();
+        $dosen_perlu_pembinaan = $sortedDosen->last();
 
         // Top 3 Dosen
-        $top_dosen = Dosen::with('votings')
-            ->get()
-            ->filter(function ($dosen) {
-                return $dosen->votings->count() > 0;
-            })
-            ->sortByDesc(function ($dosen) {
-                return $dosen->getRataRata();
-            })
-            ->take(3);
+        $top_dosen = $sortedDosen->take(3);
 
+        $rankingData = $sortedDosen->take(3);
+
+        foreach ($rankingData as $index => $item) {
+            $item->rank = $index + 1;
+            if ($index == 0) $item->medal = '🥇';
+            elseif ($index == 1) $item->medal = '🥈';
+            elseif ($index == 2) $item->medal = '🥉';
+            else $item->medal = $index + 1;
+        }
         // Data untuk chart
         $chartLabels = [];
         $chartData = [];
         foreach ($top_dosen as $dosen) {
+            $chartLabels[] = $dosen->nama;
+            $chartData[] = $dosen->getRataRata();
+        }
+        foreach ($rankingData as $dosen) {
             $chartLabels[] = $dosen->nama;
             $chartData[] = $dosen->getRataRata();
         }
@@ -66,6 +57,7 @@ class DashboardController extends Controller
             'dosen_terbaik',
             'dosen_perlu_pembinaan',
             'top_dosen',
+            'rankingData',
             'chartLabels',
             'chartData'
         ));

@@ -96,14 +96,15 @@ class MahasiswaController extends Controller
             'no_hp' => $request->no_hp,
         ]);
 
+        if ($request->hasFile('foto')) {
+            $user->foto = $request->file('foto')->store('mahasiswa-photos', 'public');
+            $user->save();
+        }
+
         // Create Mahasiswa
-        $data = $request->except(['email', 'username', 'password', 'no_hp']);
+        $data = $request->except(['email', 'username', 'password', 'no_hp', 'foto']);
         $data['user_id'] = $user->id;
         $data['status_voting'] = 'Belum';
-
-        if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('mahasiswa-photos', 'public');
-        }
 
         $mahasiswa = Mahasiswa::create($data);
 
@@ -158,12 +159,16 @@ class MahasiswaController extends Controller
         $data = $request->except(['email', 'username', 'no_hp']);
 
         if ($request->hasFile('foto')) {
-            if ($mahasiswa->foto) {
-                Storage::disk('public')->delete($mahasiswa->foto);
+            if ($mahasiswa->user?->foto && Storage::disk('public')->exists($mahasiswa->user->foto)) {
+                Storage::disk('public')->delete($mahasiswa->user->foto);
             }
-            $data['foto'] = $request->file('foto')->store('mahasiswa-photos', 'public');
+
+            $mahasiswa->user->foto = $request->file('foto')->store('mahasiswa-photos', 'public');
+            $mahasiswa->user->save();
         }
 
+        // Update Mahasiswa
+        $data = $request->except(['email', 'username', 'no_hp', 'foto']);
         $mahasiswa->update($data);
 
         ActivityLog::logActivity(

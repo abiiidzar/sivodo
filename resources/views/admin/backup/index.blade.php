@@ -5,11 +5,53 @@
 
 @section('content')
 <div class="space-y-6">
+    <!-- Alert -->
+    @if(session('success'))
+        <div class="banner-success rounded-lg p-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-emerald-700">{{ session('success') }}</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-emerald-700 hover:text-emerald-900">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
+            <svg class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <p class="text-sm font-semibold text-red-700">Error!</p>
+                <p class="text-sm text-red-600">{{ session('error') }}</p>
+            </div>
+        </div>
+    @endif
+
+    <!-- Info MySQL Path -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="flex items-start space-x-3">
+            <svg class="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <p class="text-sm font-semibold text-blue-700">Informasi Backup</p>
+                <p class="text-sm text-blue-600">Pastikan MySQL terinstal dan path-nya benar. Jika terjadi error, <a href="{{ route('admin.backup.check-mysql') }}" target="_blank" class="underline font-medium">klik di sini untuk cek path MySQL</a></p>
+            </div>
+        </div>
+    </div>
+
     <!-- Create Backup -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
-                <h4 class="font-semibold text-navy">💾 Buat Backup Baru</h4>
+                <h4 class="font-semibold text-navy">Buat Backup Baru</h4>
                 <p class="text-sm text-gray-500 mt-1">Membuat backup seluruh database ke file SQL</p>
             </div>
             <form action="{{ route('admin.backup.create') }}" method="POST">
@@ -23,7 +65,8 @@
 
     <!-- Restore -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h4 class="font-semibold text-navy mb-3">📂 Restore Database</h4>
+        <h4 class="font-semibold text-navy mb-3">Restore Database</h4>
+        <p class="text-sm text-red-500 mb-3">⚠️ Restore akan mengganti SEMUA data saat ini. Pastikan Anda sudah backup terlebih dahulu!</p>
         <form action="{{ route('admin.backup.restore') }}" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-end gap-4">
             @csrf
             <div class="flex-1 min-w-[200px]">
@@ -31,9 +74,9 @@
                 <input type="file" name="file" accept=".sql" required
                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold-10 file:text-gold hover:file:bg-gold-20">
             </div>
-            <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition text-sm font-medium h-11"
-                    onclick="return confirm('Restore database akan mengganti semua data saat ini. Lanjutkan?')">
-                Restore
+            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium h-11"
+                    onclick="return confirm('⚠️ PERINGATAN: Restore akan mengganti SEMUA data saat ini!\n\nApakah Anda yakin ingin melanjutkan?')">
+                Restore Database
             </button>
         </form>
     </div>
@@ -41,7 +84,7 @@
     <!-- Daftar Backup -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100">
-            <h4 class="font-semibold text-navy">📋 Daftar Backup</h4>
+            <h4 class="font-semibold text-navy">Daftar Backup</h4>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
@@ -79,6 +122,13 @@
                                         </svg>
                                     </button>
                                 </form>
+                                <a href="{{ route('admin.backup.preview', $backup->name) }}" target="_blank"
+                                class="text-gray-400 hover:text-green-600 transition" title="Preview">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </a>
                             </div>
                         </td>
                     </tr>

@@ -55,7 +55,7 @@
                         <tr class="border-b border-gray-100 bg-gray-50">
                             <th class="text-left py-3 px-4 text-gray-500 font-medium w-16">Rank</th>
                             <th class="text-left py-3 px-4 text-gray-500 font-medium">Dosen</th>
-                            <th class="text-left py-3 px-4 text-gray-500 font-medium">Program Studi</th>
+                            <th class="text-left py-3 px-4 text-gray-500 font-medium">Mata Kuliah</th>
                             <th class="text-left py-3 px-4 text-gray-500 font-medium">Rata-rata</th>
                             <th class="text-left py-3 px-4 text-gray-500 font-medium">Voting</th>
                             <th class="text-left py-3 px-4 text-gray-500 font-medium">Kategori</th>
@@ -80,14 +80,13 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <p class="font-medium text-navy">{{ $item->nama }}</p>
-                                        <p class="text-xs text-gray-400">{{ $item->nidn }}</p>
+                                        <p class="font-medium text-navy font-bold">{{ $item->nama }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="py-3 px-4">
-                                <span class="badge-prodi px-3 py-1 rounded-full text-xs font-medium">
-                                    {{ $item->program_studi }}
+                                <span class="badge-prodi px-3 py-1 rounded-full text-xs font-medium font-bold">
+                                    {{ $item->mata_kuliah ?? '-' }}
                                 </span>
                             </td>
                             <td class="py-3 px-4">

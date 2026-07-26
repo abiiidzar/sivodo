@@ -64,7 +64,7 @@ F\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
 
 | \*\*Platform\*\* | Web Based |
 
-| \*\*Framework\*\* | Laravel 12 |
+| \*\*Framework\*\* | Laravel 13 |
 
 | \*\*Database\*\* | MySQL |
 
@@ -122,7 +122,7 @@ F\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
 
 | 4 | \*\*Pencarian \& Filter\*\* | Di setiap halaman data | ✅ |
 
-| 5 | \*\*Upload Berkas\*\* | Foto dosen, foto mahasiswa, RPS mata kuliah | ✅ |
+| 5 | \*\*Upload Berkas\*\* | Foto dosen, foto mahasiswa| ✅ |
 
 | 6 | \*\*Laporan\*\* | PDF \& Excel dengan filter | ✅ |
 
@@ -170,7 +170,7 @@ F\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
 
 | \*\*Master Data Mahasiswa\*\* | Nama, NIM, program studi, semester, kelas, validasi hak voting, foto |
 
-| \*\*Data Mata Kuliah\*\* | Nama mata kuliah, kode, dosen pengampu, kelas, semester, RPS |
+| \*\*Data Mata Kuliah\*\* | Nama mata kuliah, kode, dosen pengampu, kelas, semester |
 
 | \*\*Form Voting/Evaluasi\*\* | Penguasaan materi, cara mengajar, kedisiplinan, komunikasi, ketepatan waktu, tugas, objektivitas penilaian, kritik dan saran |
 
@@ -476,7 +476,7 @@ F\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
 
 │ Tampilkan       │
 
-│ 9 Pertanyaan    │
+│ 7 Pertanyaan    │
 
 │ Kuisioner       │
 
@@ -698,7 +698,7 @@ F\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
 
 │ Ambil Nilai     │
 
-│ dari 9          │
+│ dari 7          │
 
 │ Pertanyaan      │
 
@@ -720,7 +720,7 @@ F\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
 
 │ Rata-rata =     │
 
-│ Total Skor ÷ 9  │
+│ Total Skor ÷ 7  │
 
 └──────┬──────────┘
 
@@ -1248,7 +1248,7 @@ F\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
 
 └─────────────────────────────┘          │ + getKategori()             │
 
-&#x20;                                        └─────────────────────────────┘
+&#x20;                                   └─────────────────────────────┘
 
 
 
@@ -1270,13 +1270,13 @@ F\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
 
 │ - status\_aktif: boolean     │          │ - dosen\_id: int             │
 
-│ - foto: string              │          │ - rps: string               │
+│ - foto: string              │          ├─────────────────────────────┤
 
-├─────────────────────────────┤          ├─────────────────────────────┤
+├─────────────────────────────┤          │ + getDosenPengampu()        │
 
-│ + getTotalVoting()          │          │ + getDosenPengampu()        │
+│ + getTotalVoting()          │          └──────────────┬──────────────┘
 
-│ + getRataRata()             │          └──────────────┬──────────────┘
+│ + getRataRata()             │                         │
 
 │ + getRanking()              │                         │
 
@@ -1580,7 +1580,6 @@ F\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
 
 &#x20;                             │    kelas             │
 
-&#x20;                             │    rps               │
 
 &#x20;                             └──────────────────────┘
 
@@ -1676,7 +1675,7 @@ VOTINGS (mahasiswa\_id + mata\_kuliah\_id + semester\_id) → UNIQUE
 
 | \*\*semesters\*\* | id | - | Master semester (tahun ajaran, status) |
 
-| \*\*pertanyaans\*\* | id | - | Master pertanyaan kuisioner (9 pertanyaan) |
+| \*\*pertanyaans\*\* | id | - | Master pertanyaan kuisioner (7 pertanyaan) |
 
 | \*\*votings\*\* | id | mahasiswa\_id, dosen\_id, mata\_kuliah\_id, semester\_id | Header voting (total skor, rata-rata, kritik, saran) |
 
@@ -1795,8 +1794,7 @@ VOTINGS (mahasiswa\_id + mata\_kuliah\_id + semester\_id) → UNIQUE
 | 5 | Ketepatan Waktu | Apakah dosen memulai dan mengakhiri perkuliahan tepat waktu? |
 | 6 | Objektivitas | Apakah dosen memberikan penilaian secara objektif? |
 | 7 | Tugas | Apakah tugas yang diberikan sesuai dengan materi perkuliahan? |
-| 8 | Suasana Belajar | Apakah dosen menciptakan suasana belajar yang nyaman? |
-| 9 | Bimbingan | Apakah dosen memberikan bimbingan dengan baik? |
+
 
 ---
 
@@ -2465,10 +2463,6 @@ Krem	#f5f3ef	Background halaman
 
 │  │  7   │  Tugas                            │ ○  │ ○  │ ○  │ ●  │ ○  │   │
 
-│  │  8   │  Suasana Belajar                  │ ○  │ ○  │ ○  │ ○  │ ●  │   │
-
-│  │  9   │  Bimbingan                        │ ○  │ ○  │ ○  │ ●  │ ○  │   │
-
 │  └──────────────────────────────────────────────────────────────────┘   │
 
 │                                                                          │
@@ -2519,7 +2513,7 @@ Krem	#f5f3ef	Background halaman
 
 │  │              📊 TOTAL SKOR                                       │   │
 
-│  │                  40 / 50                                         │   │
+│  │                  30 / 35                                         │   │
 
 │  │                                                                  │   │
 
@@ -2693,7 +2687,7 @@ Krem	#f5f3ef	Background halaman
 
 | 1 | \*\*Abidzar Al Ghiffari\*\* | Analisis kebutuhan, desain database (ERD), autentikasi multi-user, dashboard admin, integrasi seluruh modul, deployment, dokumentasi akhir |
 
-| 2 | \*\*Mohammad Raffi Dwika\*\* | CRUD Master Dosen, CRUD Mata Kuliah, CRUD Semester, pencarian dan filter data, upload RPS |
+| 2 | \*\*Mohammad Raffi Dwika\*\* | CRUD Master Dosen, CRUD Mata Kuliah, CRUD Semester, pencarian dan filter data |
 
 | 3 | \*\*Rindiani Fatika Sari\*\* | CRUD Mahasiswa, validasi hak voting, upload data (Excel/PDF), manajemen akun pengguna, upload foto mahasiswa |
 
@@ -2726,8 +2720,6 @@ Krem	#f5f3ef	Background halaman
 | CRUD Mata Kuliah | - | ✅ | - | - | - |
 
 | CRUD Semester | - | ✅ | - | - | - |
-
-| Upload RPS | - | ✅ | - | - | - |
 
 | CRUD Mahasiswa | - | - | ✅ | - | - |
 
@@ -2785,7 +2777,7 @@ Krem	#f5f3ef	Background halaman
 
 | Senin | Analisis kebutuhan \& pembuatan ERD | Abidzar |
 
-| Selasa | Desain database \& miFgration | Abidzar |
+| Selasa | Desain database \& migration | Abidzar |
 
 | Rabu | Membuat seeder \& model | Abidzar |
 
@@ -2907,7 +2899,7 @@ Krem	#f5f3ef	Background halaman
 
 | Selasa | Upload foto mahasiswa | Rindiani |
 
-| Rabu | Upload RPS mata kuliah | Raffi |
+| Rabu | Validasi Data Mata Kuliah & Dosen | Raffi |
 
 | Kamis | Import/Export Excel | Rindiani |
 

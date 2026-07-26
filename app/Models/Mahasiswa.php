@@ -19,6 +19,11 @@ class Mahasiswa extends Model
         'status_voting',
     ];
 
+    public function getFotoAttribute($value)
+    {
+        return $value ?? $this->user?->foto;
+    }
+
     // Relasi 1:1 dengan User (inverse)
     public function user()
     {

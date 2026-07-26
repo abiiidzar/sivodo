@@ -58,7 +58,26 @@
                             </span>
                         </td>
                         <td class="py-3 px-4">
-                            <span class="px-2 py-0.5 rounded-full text-xs bg-gold-10 text-gold font-medium">
+                            @php
+                                $activityClass = 'bg-gray-50 text-gray-700';
+
+                                if (str_contains($log->aktivitas, 'Login')) {
+                                    $activityClass = 'bg-emerald-50 text-emerald-700';
+                                } elseif (str_contains($log->aktivitas, 'Logout')) {
+                                    $activityClass = 'bg-slate-50 text-slate-700';
+                                } elseif (str_contains($log->aktivitas, 'Tambah')) {
+                                    $activityClass = 'bg-blue-50 text-blue-700';
+                                } elseif (str_contains($log->aktivitas, 'Edit')) {
+                                    $activityClass = 'bg-amber-50 text-amber-700';
+                                } elseif (str_contains($log->aktivitas, 'Hapus')) {
+                                    $activityClass = 'bg-red-50 text-red-700';
+                                } elseif (str_contains($log->aktivitas, 'Reset')) {
+                                    $activityClass = 'bg-orange-50 text-orange-700';
+                                } elseif (str_contains($log->aktivitas, 'Import') || str_contains($log->aktivitas, 'Export')) {
+                                    $activityClass = 'bg-violet-50 text-violet-700';
+                                }
+                            @endphp
+                            <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $activityClass }}">
                                 {{ $log->aktivitas }}
                             </span>
                         </td>

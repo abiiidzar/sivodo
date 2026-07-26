@@ -119,7 +119,6 @@
 
                     <div class="p-4">
                         <h5 class="font-bold text-navy text-lg">{{ $dosen->nama }}</h5>
-                        <p class="text-sm text-gray-500">NIDN: {{ $dosen->nidn }}</p>
 
                         <!-- Mata Kuliah yang diajar -->
                         <div class="mt-2 space-y-1">

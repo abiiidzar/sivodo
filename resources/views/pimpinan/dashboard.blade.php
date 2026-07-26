@@ -135,17 +135,17 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h4 class="font-semibold text-navy mb-4">🏅 Top 3 Dosen</h4>
         <div class="space-y-4">
-            @foreach($top_dosen as $index => $dosen)
-            <div class="flex items-center space-x-3 p-3 rounded-lg {{ $index == 0 ? 'bg-gold-10' : ($index == 1 ? 'bg-gray-50' : 'bg-orange-50') }}">
+            @foreach($rankingData as $item)
+            <div class="flex items-center space-x-3 p-3 rounded-lg {{ $item->rank == 1 ? 'bg-gold-10' : ($item->rank == 2 ? 'bg-gray-50' : 'bg-orange-50') }}">
                 <span class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
-                    {{ $index == 0 ? 'rank-1' : ($index == 1 ? 'rank-2' : 'rank-3') }}">
-                    {{ $index + 1 }}
+                    {{ $item->rank == 1 ? 'rank-1' : ($item->rank == 2 ? 'rank-2' : ($item->rank == 3 ? 'rank-3' : 'rank-default')) }}">
+                    {{ $item->medal }}
                 </span>
                 <div class="flex-1">
-                    <p class="text-sm font-semibold text-navy">{{ $dosen->nama }}</p>
-                    <p class="text-xs text-gray-500">{{ $dosen->program_studi }}</p>
+                    <p class="text-sm font-semibold text-navy">{{ $item->nama }}</p>
+                    <p class="text-xs text-gray-500">{{ $item->program_studi }}</p>
                 </div>
-                <span class="text-gold font-bold">{{ number_format($dosen->getRataRata(), 2) }}</span>
+                <span class="text-gold font-bold">{{ number_format($item->getRataRata(), 2) }}</span>
             </div>
             @endforeach
         </div>
