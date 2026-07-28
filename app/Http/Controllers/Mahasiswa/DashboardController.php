@@ -28,15 +28,16 @@ class DashboardController extends Controller
 
         $sudah_voting = 0;
         $statusVoting = [];
+        // GANTI loop foreach di atas dengan ini:
+        $sudahVotingIds = Voting::where('mahasiswa_id', $mahasiswa->id)
+            ->where('semester_id', $semesterAktif->id ?? 0)
+            ->pluck('dosen_id') // Ambil array berisi ID dosen yang sudah divoting
+            ->toArray();
+
+        $sudah_voting = 0;
         foreach ($dosens as $dosen) {
-            $sudah = Voting::where('mahasiswa_id', $mahasiswa->id)
-                ->where('dosen_id', $dosen->id)
-                ->where('semester_id', $semesterAktif->id ?? 0)
-                ->exists();
-
-            $statusVoting[$dosen->id] = $sudah;
-
-            if ($sudah) {
+            $statusVoting[$dosen->id] = in_array($dosen->id, $sudahVotingIds);
+            if ($statusVoting[$dosen->id]) {
                 $sudah_voting++;
             }
         }

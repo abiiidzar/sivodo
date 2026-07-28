@@ -3,26 +3,36 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\File;
 
 class BackupController extends Controller
 {
     public function index()
     {
-        $backups = Storage::disk('local')->files('backups');
+        $backupDir = storage_path('app/backups');
         $backupList = [];
 
-        foreach ($backups as $backup) {
-            $backupList[] = (object) [
-                'name' => basename($backup),
-                'path' => $backup,
-                'size' => Storage::disk('local')->size($backup),
-                'date' => Storage::disk('local')->lastModified($backup),
-            ];
+        if (is_dir($backupDir)) {
+            $files = array_filter(scandir($backupDir), function ($item) use ($backupDir) {
+                if ($item === '.' || $item === '..') {
+                    return false;
+                }
+
+                return is_file($backupDir . DIRECTORY_SEPARATOR . $item);
+            });
+
+            foreach ($files as $file) {
+                $path = $backupDir . DIRECTORY_SEPARATOR . $file;
+                $backupList[] = (object) [
+                    'name' => $file,
+                    'path' => $path,
+                    'size' => filesize($path),
+                    'date' => filemtime($path),
+                ];
+            }
         }
 
         usort($backupList, function ($a, $b) {
@@ -37,66 +47,58 @@ class BackupController extends Controller
         $filename = 'backup_' . date('Y-m-d_H-i-s') . '.sql';
         $path = storage_path('app/backups/' . $filename);
 
-        // Buat folder jika belum ada
         if (!is_dir(storage_path('app/backups'))) {
             mkdir(storage_path('app/backups'), 0755, true);
         }
 
         $db = config('database.connections.mysql');
-
-        // Cari path mysqldump yang tersedia
         $mysqldump = $this->findMysqldumpPath();
 
         if (!$mysqldump) {
             return redirect()->back()->with('error', 'Tidak ditemukan mysqldump. Pastikan MySQL terinstal.');
         }
 
-        // === DEBUG: Tampilkan command yang dijalankan ===
+        // Jangan sertakan --password jika kosong untuk menghindari warning
+        $credentials = "--user={$db['username']} --host={$db['host']}";
+        if (!empty($db['password'])) {
+            $credentials .= " --password={$db['password']}";
+        }
+
+        // --add-drop-table agar saat restore, tabel lama ditimpa
         $command = sprintf(
-            '"%s" --user=%s --password=%s --host=%s %s > "%s" 2>&1',
+            '"%s" %s --add-drop-table %s > "%s" 2>&1',
             $mysqldump,
-            $db['username'],
-            $db['password'],
-            $db['host'],
+            $credentials,
             $db['database'],
             $path
         );
 
-        // Simpan command ke log untuk debug
-        Log::info('Backup Command: ' . $command);
-
-        // Jalankan command
         exec($command, $output, $returnCode);
-
-        // === DEBUG: Tampilkan output ===
-        Log::info('Backup Return Code: ' . $returnCode);
-        Log::info('Backup Output: ' . implode("\n", $output));
 
         if ($returnCode === 0 && file_exists($path) && filesize($path) > 0) {
             return response()->download($path, $filename);
         }
 
-        $errorMsg = implode("\n", $output);
-        return redirect()->back()->with('error', 'Gagal membuat backup! Error: ' . $errorMsg);
+        return redirect()->back()->with('error', 'Gagal membuat backup! Error: ' . implode("\n", $output));
     }
 
     public function download($filename)
     {
-        $path = 'backups/' . $filename;
+        $path = storage_path('app/backups/' . $filename);
 
-        if (!Storage::disk('local')->exists($path)) {
+        if (!file_exists($path)) {
             return redirect()->back()->with('error', 'File tidak ditemukan!');
         }
 
-        return Storage::disk('local')->download($path);
+        return response()->download($path, $filename);
     }
 
     public function delete($filename)
     {
-        $path = 'backups/' . $filename;
+        $path = storage_path('app/backups/' . $filename);
 
-        if (Storage::disk('local')->exists($path)) {
-            Storage::disk('local')->delete($path);
+        if (file_exists($path)) {
+            @unlink($path);
             return redirect()->back()->with('success', 'File backup berhasil dihapus!');
         }
 
@@ -106,96 +108,131 @@ class BackupController extends Controller
     public function restore(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:sql|max:51200',
+            'file' => 'required|file|max:51200',
         ]);
 
-        $file = $request->file('file');
-        $path = $file->getPathname();
+        $mysql = $this->findMysqlPath();
 
-        // === CEK ISI FILE ===
-        $fileContent = File::get($path);
-        $fileSize = File::size($path);
-
-        Log::info('=== RESTORE DEBUG ===');
-        Log::info('File size: ' . $fileSize . ' bytes');
-        Log::info('File path: ' . $path);
-
-        // Cek apakah file berisi data SQL
-        if ($fileSize < 100) {
-            return redirect()->back()->with('error', 'File SQL terlalu kecil (' . $fileSize . ' bytes). Pastikan file backup valid dan berisi data.');
-        }
-
-        // Cek apakah ada keyword SQL penting
-        if (!str_contains($fileContent, 'CREATE TABLE') && !str_contains($fileContent, 'INSERT INTO')) {
-            Log::warning('File SQL tidak mengandung CREATE TABLE atau INSERT INTO');
-            return redirect()->back()->with('error', 'File SQL tidak valid (tidak mengandung struktur tabel atau data).');
+        if (!$mysql) {
+            return redirect()->back()->with('error', 'Tidak ditemukan mysql.exe. Pastikan MySQL terinstal di server.');
         }
 
         $db = config('database.connections.mysql');
 
-        // Cari path mysql yang tersedia
+        // 1. Pindahkan file upload ke folder storage
+        $file = $request->file('file');
+        $tempPath = storage_path('app/backups/restore_temp.sql');
+
+        if (!is_dir(storage_path('app/backups'))) {
+            mkdir(storage_path('app/backups'), 0755, true);
+        }
+
+        $file->move(storage_path('app/backups'), 'restore_temp.sql');
+
+        // 2. Siapkan credentials
+        $credentials = "--user={$db['username']} --host={$db['host']}";
+        if (!empty($db['password'])) {
+            $credentials .= " --password={$db['password']}";
+        }
+
+        // 3. PERBAIKAN UTAMA:
+        // Ubah path backslash (\) menjadi slash (/) agar bisa dibaca oleh perintah source MySQL
+        $sourcePath = str_replace('\\', '/', $tempPath);
+
+        // Gunakan perintah -e "source ..." agar mysql.exe membaca file-nya sendiri tanpa pipe cmd
+        $command = sprintf(
+            '"%s" %s %s -e "source %s" 2>&1',
+            $mysql,
+            $credentials,
+            $db['database'],
+            $sourcePath
+        );
+
+        // Eksekusi command
+        exec($command, $output, $returnCode);
+
+        // 4. Hapus file sementara
+        @unlink($tempPath);
+
+        // Catat log
+        Log::info('Restore Command: ' . $command);
+        Log::info('Restore Return Code: ' . $returnCode);
+        Log::info('Restore Output: ' . implode("\n", $output));
+
+        // Cek hasil eksekusi
+        if ($returnCode === 0 && empty($output)) {
+            ActivityLog::logActivity(
+                auth()->id(),
+                'Restore Database',
+                "Berhasil merestore database dari file: " . $file->getClientOriginalName()
+            );
+
+            return redirect()->back()->with('success', 'Database berhasil direstore! Silakan refresh halaman untuk melihat perubahan data.');
+        }
+
+        // Jika ada output error dari mysql, tampilkan ke layar
+        $errorMsg = "Return Code: {$returnCode}\n";
+        $errorMsg .= "Output Sistem: " . implode("\n", $output) . "\n";
+
+        return redirect()->back()->with('error', 'Gagal merestore database! Detail Error: ' . $errorMsg);
+    }
+        public function restoreFromList($filename)
+    {
         $mysql = $this->findMysqlPath();
 
         if (!$mysql) {
-            return redirect()->back()->with('error', 'Tidak ditemukan mysql. Pastikan MySQL terinstal.');
+            return redirect()->back()->with('error', 'Tidak ditemukan mysql.exe. Pastikan MySQL terinstal di server.');
         }
 
-        // === BACA FILE DAN JALANKAN PER QUERY (UNTUK MENGHINDARI ERROR) ===
-        $sqlContent = File::get($path);
+        $db = config('database.connections.mysql');
 
-        // Pisahkan query berdasarkan ";" (tapi hati-hati dengan delimiter)
-        $queries = explode(";\n", $sqlContent);
-        $successCount = 0;
-        $errorCount = 0;
-        $errors = [];
+        // Path file backup yang ada di storage
+        $tempPath = storage_path('app/backups/' . $filename);
 
-        // Matikan foreign key checks untuk menghindari error constraint
-        try {
-            DB::statement('SET FOREIGN_KEY_CHECKS=0');
-            Log::info('Foreign key checks disabled');
-        } catch (\Exception $e) {
-            Log::warning('Could not disable foreign key checks: ' . $e->getMessage());
+        if (!file_exists($tempPath)) {
+            return redirect()->back()->with('error', 'File backup tidak ditemukan di server!');
         }
 
-        foreach ($queries as $query) {
-            $query = trim($query);
-            if (empty($query)) {
-                continue;
-            }
-
-            // Skip komentar
-            if (str_starts_with($query, '--') || str_starts_with($query, '/*')) {
-                continue;
-            }
-
-            try {
-                DB::statement($query);
-                $successCount++;
-            } catch (\Exception $e) {
-                $errorCount++;
-                $errors[] = $e->getMessage();
-                Log::warning('Query failed: ' . $query . ' - Error: ' . $e->getMessage());
-            }
+        // Siapkan credentials
+        $credentials = "--user={$db['username']} --host={$db['host']}";
+        if (!empty($db['password'])) {
+            $credentials .= " --password={$db['password']}";
         }
 
-        // Aktifkan kembali foreign key checks
-        try {
-            DB::statement('SET FOREIGN_KEY_CHECKS=1');
-        } catch (\Exception $e) {
-            Log::warning('Could not enable foreign key checks: ' . $e->getMessage());
+        // Ubah path backslash (\) menjadi slash (/)
+        $sourcePath = str_replace('\\', '/', $tempPath);
+
+        // Gunakan perintah -e "source ..."
+        $command = sprintf(
+            '"%s" %s %s -e "source %s" 2>&1',
+            $mysql,
+            $credentials,
+            $db['database'],
+            $sourcePath
+        );
+
+        // Eksekusi command
+        exec($command, $output, $returnCode);
+
+        // Catat log
+        Log::info('Restore List Command: ' . $command);
+        Log::info('Restore List Return Code: ' . $returnCode);
+        Log::info('Restore List Output: ' . implode("\n", $output));
+
+        if ($returnCode === 0 && empty($output)) {
+            ActivityLog::logActivity(
+                auth()->id(),
+                'Restore Database',
+                "Berhasil merestore database dari daftar file: " . $filename
+            );
+
+            return redirect()->back()->with('success', 'Database berhasil direstore dari daftar! Silakan refresh halaman.');
         }
 
-        Log::info('Restore completed. Success: ' . $successCount . ', Errors: ' . $errorCount);
+        $errorMsg = "Return Code: {$returnCode}\n";
+        $errorMsg .= "Output Sistem: " . implode("\n", $output) . "\n";
 
-        if ($errorCount > 0 && $successCount === 0) {
-            return redirect()->back()->with('error', 'Gagal merestore database! Semua query gagal. Error pertama: ' . ($errors[0] ?? 'Unknown error'));
-        }
-
-        if ($errorCount > 0) {
-            return redirect()->back()->with('warning', 'Restore selesai dengan ' . $errorCount . ' error. ' . $successCount . ' query berhasil dijalankan. Error: ' . implode('; ', array_slice($errors, 0, 3)));
-        }
-
-        return redirect()->back()->with('success', 'Database berhasil direstore! ' . $successCount . ' query dijalankan.');
+        return redirect()->back()->with('error', 'Gagal merestore database! Detail Error: ' . $errorMsg);
     }
 
     /**
@@ -218,14 +255,11 @@ class BackupController extends Controller
             }
         }
 
-        // Coba cari di PATH
         $output = shell_exec('where mysqldump 2>nul');
         if ($output) {
-            Log::info('Found mysqldump in PATH: ' . trim($output));
             return trim($output);
         }
 
-        Log::error('mysqldump not found!');
         return null;
     }
 
@@ -249,25 +283,19 @@ class BackupController extends Controller
             }
         }
 
-        // Coba cari di PATH
         $output = shell_exec('where mysql 2>nul');
         if ($output) {
-            Log::info('Found mysql in PATH: ' . trim($output));
             return trim($output);
         }
 
-        Log::error('mysql not found!');
         return null;
     }
 
-    /**
-     * Cek path MySQL yang tersedia (untuk debugging)
-     */
     public function checkMysql()
     {
         $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
-
         $paths = [];
+
         if ($isWindows) {
             $mysqlPaths = [
                 'C:\\laragon\\bin\\mysql\\mysql-8.0.30-winx64\\bin\\mysql.exe',
@@ -284,13 +312,9 @@ class BackupController extends Controller
                 ];
             }
 
-            // Cek di PATH
             $output = shell_exec('where mysql 2>nul');
             if ($output) {
-                $paths[] = [
-                    'path' => trim($output) . ' (dari PATH)',
-                    'exists' => '✅'
-                ];
+                $paths[] = ['path' => trim($output) . ' (dari PATH)', 'exists' => '✅'];
             }
         }
 
@@ -305,26 +329,24 @@ class BackupController extends Controller
         ]);
     }
 
-    /**
-     * Cek isi file backup (untuk debugging)
-     */
     public function previewBackup($filename)
     {
-        $path = 'backups/' . $filename;
+        $path = storage_path('app/backups/' . $filename);
 
-        if (!Storage::disk('local')->exists($path)) {
+        if (!file_exists($path)) {
             return response()->json(['error' => 'File not found'], 404);
         }
 
-        $content = Storage::disk('local')->get($path);
+        $content = file_get_contents($path);
         $lines = explode("\n", $content);
         $firstLines = array_slice($lines, 0, 50);
 
         return response()->json([
             'filename' => $filename,
-            'size' => Storage::disk('local')->size($path) . ' bytes',
+            'size' => filesize($path) . ' bytes',
             'preview' => $firstLines,
             'total_lines' => count($lines),
         ]);
     }
+
 }

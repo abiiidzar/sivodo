@@ -40,22 +40,31 @@ class User extends Authenticatable
     }
     public function getVotingProgress()
     {
-        if (!$this->isMahasiswa()) {
+        if (!$this->isMahasiswa() || !$this->mahasiswa) {
             return 0;
         }
 
-        $mahasiswa = $this->mahasiswa;
-        if (!$mahasiswa) {
+        // Ambil semester aktif
+        $semesterAktif = Semester::where('status', 'Aktif')->first();
+        if (!$semesterAktif) {
             return 0;
         }
 
-        $totalDosen = Dosen::count();
-        if ($totalDosen === 0) {
+        // Hitung total mata kuliah yang tersedia untuk kelas mahasiswa ini di semester aktif
+        $totalMataKuliah = MataKuliah::where('kelas', $this->mahasiswa->kelas)
+                            ->where('semester', $semesterAktif->semester) // Sesuaikan jika pakai semester_id
+                            ->count();
+
+        if ($totalMataKuliah === 0) {
             return 0;
         }
 
-        $sudahVoting = Voting::where('mahasiswa_id', $mahasiswa->id)->count();
-        return round(($sudahVoting / $totalDosen) * 100);
+        // Hitung berapa yang sudah divoting
+        $sudahVoting = Voting::where('mahasiswa_id', $this->mahasiswa->id)
+                            ->where('semester_id', $semesterAktif->id)
+                            ->count();
+
+        return round(($sudahVoting / $totalMataKuliah) * 100);
     }
 
     // Relasi 1:N dengan ActivityLog

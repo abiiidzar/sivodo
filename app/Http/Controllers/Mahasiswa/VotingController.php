@@ -139,8 +139,13 @@ class VotingController extends Controller
         }
 
         // Hitung total skor
+        // $totalSkor = array_sum($request->nilai);
+        // $rataRata = round($totalSkor / count($request->nilai), 2);
+        
+        // AMANKAN SEPERTI INI:
         $totalSkor = array_sum($request->nilai);
-        $rataRata = round($totalSkor / count($request->nilai), 2);
+        $jumlahPertanyaan = count($request->nilai);
+        $rataRata = $jumlahPertanyaan > 0 ? round($totalSkor / $jumlahPertanyaan, 2) : 0;
 
         // Simpan voting
         $voting = Voting::create([

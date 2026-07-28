@@ -54,8 +54,11 @@ class Voting extends Model
     public function hitungSkor()
     {
         $total = $this->votingDetails()->sum('nilai');
+        $jumlahPertanyaan = $this->votingDetails()->count();
+
         $this->total_skor = $total;
-        $this->rata_rata = round($total / $this->votingDetails()->count(), 2);
+        // Hindari pembagian nol
+        $this->rata_rata = $jumlahPertanyaan > 0 ? round($total / $jumlahPertanyaan, 2) : 0;
         $this->save();
     }
 

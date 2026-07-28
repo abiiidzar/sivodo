@@ -49,21 +49,36 @@ class MahasiswaController extends Controller
         $prodiList = Mahasiswa::select('program_studi')->distinct()->pluck('program_studi');
 
         // Data untuk progress voting (total dosen & sudah voting)
-        $totalDosen = Dosen::count();
-        $sudahVoting = Mahasiswa::where('status_voting', 'Sudah')->count();
-        $belumVoting = $totalDosen - $sudahVoting;
-        $sudahPercent = $totalDosen > 0 ? round(($sudahVoting / $totalDosen) * 100) : 0;
-        $belumPercent = $totalDosen > 0 ? round(($belumVoting / $totalDosen) * 100) : 0;
+        // $totalDosen = Dosen::count();
+        // $sudahVoting = Mahasiswa::where('status_voting', 'Sudah')->count();
+        // $belumVoting = $totalDosen - $sudahVoting;
+        // $sudahPercent = $totalDosen > 0 ? round(($sudahVoting / $totalDosen) * 100) : 0;
+        // $belumPercent = $totalDosen > 0 ? round(($belumVoting / $totalDosen) * 100) : 0;
 
+        // Hitung total mahasiswa
+        $totalMhs = Mahasiswa::count();
+        // Hitung mahasiswa yang SUDAH voting minimal 1 kali
+        $sudahVoting = Mahasiswa::whereHas('votings')->count();
+        // Hitung mahasiswa yang BELUM voting sama sekali
+        $belumVoting = $totalMhs - $sudahVoting;
+
+        $sudahPercent = $totalMhs > 0 ? round(($sudahVoting / $totalMhs) * 100) : 0;
+        $belumPercent = $totalMhs > 0 ? round(($belumVoting / $totalMhs) * 100) : 0;
+
+        // Kirim variabel totalMhs, bukan totalDosen
         return view('admin.mahasiswa.index', compact(
-            'mahasiswas',
-            'prodiList',
-            'totalDosen',
-            'sudahVoting',
-            'belumVoting',
-            'sudahPercent',
-            'belumPercent'
+            'mahasiswas', 'prodiList', 'totalMhs', 'sudahVoting', 'belumVoting', 'sudahPercent', 'belumPercent'
         ));
+
+        // return view('admin.mahasiswa.index', compact(
+        //     'mahasiswas',
+        //     'prodiList',
+        //     'totalDosen',
+        //     'sudahVoting',
+        //     'belumVoting',
+        //     'sudahPercent',
+        //     'belumPercent'
+        // ));
     }
 
     public function create()
@@ -156,7 +171,7 @@ class MahasiswaController extends Controller
         ]);
 
         // Update Mahasiswa
-        $data = $request->except(['email', 'username', 'no_hp']);
+        // $data = $request->except(['email', 'username', 'no_hp']);
 
         if ($request->hasFile('foto')) {
             if ($mahasiswa->user?->foto && Storage::disk('public')->exists($mahasiswa->user->foto)) {

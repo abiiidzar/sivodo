@@ -124,6 +124,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/backup/restore', [BackupController::class, 'restore'])->name('backup.restore');
     Route::get('/backup/check-mysql', [BackupController::class, 'checkMysql'])->name('backup.check-mysql');
     Route::get('/backup/preview/{filename}', [BackupController::class, 'previewBackup'])->name('backup.preview');
+    Route::post('/backup/restore-list/{filename}', [BackupController::class, 'restoreFromList'])->name('backup.restore-list');
 });
 
 // ============ MAHASISWA ROUTES ============

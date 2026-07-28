@@ -19,11 +19,17 @@ class DashboardController extends Controller
 
         $sortedDosen = Dosen::sortByRanking(Dosen::with('votings')->get());
 
+        // Ambil dosen yang SUDAH memiliki voting saja
+        $dosenDenganVoting = $sortedDosen->filter(function ($dosen) {
+            return $dosen->getTotalVoting() > 0;
+        });
+
+
         // Dosen dengan nilai tertinggi
-        $dosen_terbaik = $sortedDosen->first();
+        $dosen_terbaik = $dosenDenganVoting->first();
 
         // Dosen perlu pembinaan (nilai terendah)
-        $dosen_perlu_pembinaan = $sortedDosen->last();
+        $dosen_perlu_pembinaan = $dosenDenganVoting->last();
 
         // Top 3 Dosen
         $top_dosen = $sortedDosen->take(3);

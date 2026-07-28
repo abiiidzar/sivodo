@@ -35,12 +35,19 @@ class GrafikController extends Controller
         }
 
         // Data untuk distribusi voting per kategori
+        // $kategoriData = [
+        //     'Sangat Memuaskan' => 0,
+        //     'Memuaskan' => 0,
+        //     'Puas' => 0,
+        //     'Cukup' => 0,
+        //     'Tidak Puas' => 0,
+        // ];
         $kategoriData = [
-            'Sangat Memuaskan' => 0,
-            'Memuaskan' => 0,
-            'Puas' => 0,
-            'Cukup' => 0,
-            'Tidak Puas' => 0,
+            'Sangat Memuaskan' => Voting::where('rata_rata', '>=', 4.50)->count(),
+            'Memuaskan' => Voting::whereBetween('rata_rata', [4.00, 4.49])->count(),
+            'Puas' => Voting::whereBetween('rata_rata', [3.50, 3.99])->count(),
+            'Cukup' => Voting::whereBetween('rata_rata', [2.00, 2.99])->count(),
+            'Tidak Puas' => Voting::where('rata_rata', '<', 2.00)->count(),
         ];
 
         $votings = Voting::all();
