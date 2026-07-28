@@ -22,7 +22,7 @@ class ProfileUpdateRequest extends FormRequest
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($userId)],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($userId)],
             'no_hp' => ['nullable', 'string', 'max:20'],
-            'foto' => ['nullable', 'image', 'max:2048'],
+            'foto' => ['nullable', 'image', 'max:8192'],
 
             // Field khusus mahasiswa
             'nim' => ['nullable', 'string', 'max:20'],
@@ -42,7 +42,7 @@ class ProfileUpdateRequest extends FormRequest
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah digunakan.',
             'foto.image' => 'File harus berupa gambar.',
-            'foto.max' => 'Ukuran gambar maksimal 2MB.',
+            'foto.max' => 'Ukuran gambar maksimal 8MB.',
             'nim.max' => 'NIM maksimal 20 karakter.',
             'semester.min' => 'Semester minimal 1.',
             'semester.max' => 'Semester maksimal 14.',

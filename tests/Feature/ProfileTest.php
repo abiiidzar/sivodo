@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Mahasiswa;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,7 +32,8 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs(Auth::$user)
             ->patch('/profile', [
-                'name' => 'Test User',
+                'nama' => 'Test User',
+                'username' => 'testuser',
                 'email' => 'test@example.com',
             ]);
 
@@ -40,9 +43,41 @@ class ProfileTest extends TestCase
 
         $user->refresh();
 
-        $this->assertSame('Test User', $user->name);
+        $this->assertSame('Test User', $user->nama);
+        $this->assertSame('testuser', $user->username);
         $this->assertSame('test@example.com', $user->email);
         $this->assertNull($user->email_verified_at);
+    }
+
+    public function test_profile_photo_can_be_uploaded_with_a_larger_file_size(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create([
+            'nama' => 'Old Name',
+            'username' => 'olduser',
+            'email' => 'old@example.com',
+        ]);
+
+        $photo = UploadedFile::fake()->image('profile.jpg', 400, 400)->size(3072);
+
+        $response = $this
+            ->actingAs(Auth::$user)
+            ->patch('/profile', [
+                'nama' => 'Updated Name',
+                'username' => 'updateduser',
+                'email' => 'updated@example.com',
+                'foto' => $photo,
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $user->refresh();
+
+        $this->assertNotNull($user->foto);
+        Storage::disk('public')->assertExists($user->foto);
     }
 
     public function test_student_profile_update_preserves_existing_mahasiswa_identity_fields(): void
@@ -92,7 +127,8 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs(Auth::$user)
             ->patch('/profile', [
-                'name' => 'Test User',
+                'nama' => 'Test User',
+                'username' => $user->username,
                 'email' => $user->email,
             ]);
 

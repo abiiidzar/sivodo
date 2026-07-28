@@ -61,7 +61,7 @@
                 <input type="file" id="foto" name="foto" accept="image/*"
                        onchange="previewFoto(event)"
                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold-10 file:text-gold hover:file:bg-gold-20">
-                <p class="mt-1 text-xs text-gray-400">Format: JPEG, PNG, JPG. Maksimal 2MB</p>
+                <p class="mt-1 text-xs text-gray-400">Format: JPEG, PNG, JPG. Maksimal 8MB</p>
             </div>
         </div>
         @error('foto')
