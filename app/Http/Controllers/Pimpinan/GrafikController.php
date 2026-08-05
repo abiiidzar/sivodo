@@ -43,10 +43,10 @@ class GrafikController extends Controller
         //     'Tidak Puas' => 0,
         // ];
         $kategoriData = [
-            'Sangat Memuaskan' => Voting::where('rata_rata', '>=', 4.50)->count(),
-            'Memuaskan' => Voting::whereBetween('rata_rata', [4.00, 4.49])->count(),
-            'Puas' => Voting::whereBetween('rata_rata', [3.50, 3.99])->count(),
-            'Cukup' => Voting::whereBetween('rata_rata', [2.00, 2.99])->count(),
+            'Sangat Memuaskan' => Voting::where('rata_rata', '>=', 3.50)->count(),
+            'Memuaskan' => Voting::whereBetween('rata_rata', [3.00, 3.49])->count(),
+            'Puas' => Voting::whereBetween('rata_rata', [2.50, 2.99])->count(),
+            'Cukup' => Voting::whereBetween('rata_rata', [2.00, 2.49])->count(),
             'Tidak Puas' => Voting::where('rata_rata', '<', 2.00)->count(),
         ];
 

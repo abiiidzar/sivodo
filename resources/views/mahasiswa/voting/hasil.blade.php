@@ -37,7 +37,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
             <p class="text-sm text-gray-500">Total Skor</p>
-            <p class="text-3xl font-bold text-navy">{{ $voting->total_skor }} <span class="text-lg text-gray-400">/ 45</span></p>
+            <p class="text-3xl font-bold text-navy">{{ $voting->total_skor }} <span class="text-lg text-gray-400">/ {{ $voting->votingDetails->count() * 5 }}</span></p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
             <p class="text-sm text-gray-500">Rata-rata</p>

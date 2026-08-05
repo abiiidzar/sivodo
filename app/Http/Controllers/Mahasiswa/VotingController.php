@@ -141,11 +141,10 @@ class VotingController extends Controller
         // Hitung total skor
         // $totalSkor = array_sum($request->nilai);
         // $rataRata = round($totalSkor / count($request->nilai), 2);
-        
         // AMANKAN SEPERTI INI:
         $totalSkor = array_sum($request->nilai);
         $jumlahPertanyaan = count($request->nilai);
-        $rataRata = $jumlahPertanyaan > 0 ? round($totalSkor / $jumlahPertanyaan, 2) : 0;
+        $rataRata = $jumlahPertanyaan > 0 ? round($totalSkor * 0.8 / $jumlahPertanyaan, 2) : 0;
 
         // Simpan voting
         $voting = Voting::create([
@@ -212,9 +211,9 @@ class VotingController extends Controller
 
     private function getKategori($rataRata)
     {
-        if ($rataRata >= 4.50) return ['label' => 'Sangat Memuaskan', 'class' => 'bg-emerald-500', 'color' => '#10b981'];
-        if ($rataRata >= 4.00) return ['label' => 'Memuaskan', 'class' => 'bg-blue-500', 'color' => '#3b82f6'];
-        if ($rataRata >= 3.00) return ['label' => 'Puas', 'class' => 'bg-yellow-500', 'color' => '#f59e0b'];
+        if ($rataRata >= 3.50) return ['label' => 'Sangat Memuaskan', 'class' => 'bg-emerald-500', 'color' => '#10b981'];
+        if ($rataRata >= 3.00) return ['label' => 'Memuaskan', 'class' => 'bg-blue-500', 'color' => '#3b82f6'];
+        if ($rataRata >= 2.50) return ['label' => 'Puas', 'class' => 'bg-yellow-500', 'color' => '#f59e0b'];
         if ($rataRata >= 2.00) return ['label' => 'Cukup', 'class' => 'bg-orange-500', 'color' => '#f97316'];
         return ['label' => 'Tidak Puas', 'class' => 'bg-red-500', 'color' => '#ef4444'];
     }

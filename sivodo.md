@@ -730,9 +730,9 @@ F\# 📄 PERENCANAAN APLIKASI VOTING MAHASISWA
 
 │ Tentukan Kategori:                                		      │
 
-│ 4.50 - 5.00 → Sangat Memuaskan                     │
+│ 3.50 - 5.00 → Sangat Memuaskan                     │
 
-│ 4.00 - 4.49 → Memuaskan                            │
+│ 3.00 - 4.49 → Memuaskan                            │
 
 │ 3.00 - 3.99 → Puas                                 │
 

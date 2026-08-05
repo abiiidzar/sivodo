@@ -86,7 +86,7 @@ class DosenRankingTest extends TestCase
             'dosen_id' => $dosenA->id,
             'mata_kuliah_id' => $mataKuliahA1->id,
             'semester_id' => $semester->id,
-            'rata_rata' => 4.50,
+            'rata_rata' => 3.50,
         ]);
 
         Voting::create([
@@ -94,7 +94,7 @@ class DosenRankingTest extends TestCase
             'dosen_id' => $dosenA->id,
             'mata_kuliah_id' => $mataKuliahA2->id,
             'semester_id' => $semester->id,
-            'rata_rata' => 4.50,
+            'rata_rata' => 3.50,
         ]);
 
         Voting::create([
@@ -102,7 +102,7 @@ class DosenRankingTest extends TestCase
             'dosen_id' => $dosenB->id,
             'mata_kuliah_id' => $mataKuliahB->id,
             'semester_id' => $semester->id,
-            'rata_rata' => 4.50,
+            'rata_rata' => 3.50,
         ]);
 
         $this->assertSame(1, $dosenA->getRanking());

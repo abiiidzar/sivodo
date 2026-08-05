@@ -81,9 +81,9 @@ class Dosen extends Model
     {
         $rata = $rataRata ?? $this->getRataRata();
 
-        if ($rata >= 4.50) return 'Sangat Memuaskan';
-        if ($rata >= 4.00) return 'Memuaskan';
-        if ($rata >= 3.00) return 'Puas';
+        if ($rata >= 3.50) return 'Sangat Memuaskan';
+        if ($rata >= 3.00) return 'Memuaskan';
+        if ($rata >= 2.50) return 'Puas';
         if ($rata >= 2.00) return 'Cukup';
         return 'Tidak Puas';
     }

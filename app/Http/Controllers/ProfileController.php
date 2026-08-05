@@ -41,8 +41,15 @@ class ProfileController extends Controller
             'no_hp' => $request->no_hp,
         ]);
 
-        // Handle foto upload
+                // Handle foto upload
         if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+
+            // CEK ERROR ASLI DARI PHP
+            if (!$file->isValid()) {
+                return back()->withErrors(['foto' => 'PHP Error Code: ' . $file->getError() . ' - Pesan: ' . $file->getErrorMessage()]);
+            }
+
             // Hapus foto lama jika ada
             if ($user->foto && Storage::disk('public')->exists($user->foto)) {
                 Storage::disk('public')->delete($user->foto);

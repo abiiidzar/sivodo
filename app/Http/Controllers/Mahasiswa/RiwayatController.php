@@ -49,9 +49,9 @@ class RiwayatController extends Controller
 
     private function getKategori($rataRata)
     {
-        if ($rataRata >= 4.50) return ['label' => 'Sangat Memuaskan', 'class' => 'bg-emerald-500'];
-        if ($rataRata >= 4.00) return ['label' => 'Memuaskan', 'class' => 'bg-blue-500'];
-        if ($rataRata >= 3.00) return ['label' => 'Puas', 'class' => 'bg-yellow-500'];
+        if ($rataRata >= 3.50) return ['label' => 'Sangat Memuaskan', 'class' => 'bg-emerald-500'];
+        if ($rataRata >= 3.00) return ['label' => 'Memuaskan', 'class' => 'bg-blue-500'];
+        if ($rataRata >= 2.50) return ['label' => 'Puas', 'class' => 'bg-yellow-500'];
         if ($rataRata >= 2.00) return ['label' => 'Cukup', 'class' => 'bg-orange-500'];
         return ['label' => 'Tidak Puas', 'class' => 'bg-red-500'];
     }
