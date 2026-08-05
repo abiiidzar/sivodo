@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('img/enbi1.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('img/ptleen1.png') }}">
     <title>Laporan Mata Kuliah</title>
     <style>
         body { font-family: 'Arial', sans-serif; font-size: 12px; }

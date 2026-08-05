@@ -14,7 +14,7 @@
 
             <!-- Logo -->
             <div class="w-28 h-28 rounded-full bg-[rgba(201,162,39,.15)] border-2 border-[#c9a227] flex items-center justify-center mb-8">
-                <img src="{{ asset('img/enbi1.png') }}" class="w-16" alt="Logo">
+                <img src="{{ asset('img/ptleen1.png') }}" class="w-25" alt="Logo">
             </div>
 
             <!-- Judul -->

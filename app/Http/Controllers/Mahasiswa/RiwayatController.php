@@ -13,25 +13,39 @@ class RiwayatController extends Controller
     {
         $mahasiswa = Auth::user()->mahasiswa;
 
-        $query = Voting::with(['dosen', 'mataKuliah', 'semester'])
+        $query = Voting::with(['dosen', 'mataKuliah', 'semester', 'mahasiswa'])
             ->where('mahasiswa_id', $mahasiswa->id);
 
+        // Search by dosen name or NIDN
         if ($request->filled('search')) {
             $search = $request->search;
             $query->whereHas('dosen', function ($q) use ($search) {
-                $q->where('nama', 'LIKE', "%{$search}%");
+                $q->where('nama', 'LIKE', "%{$search}%")
+                  ->orWhere('nidn', 'LIKE', "%{$search}%");
             });
         }
 
-        $votings = $query->latest()->paginate(10);
+        if ($request->filled('semester')) {
+            $query->whereHas('mahasiswa', function ($q) use ($request) {
+                $q->where('semester', $request->semester);
+            });
+        }
+
+        // Urutkan berdasarkan nilai tertinggi ke terendah
+        $query->orderBy('rata_rata', 'DESC');
+
+        $votings = $query->paginate(10);
         $votings->appends($request->all());
 
-        // TAMBAHKAN KATEGORI KE SETIAP VOTING
+        // Tambahkan kategori ke setiap voting
         foreach ($votings as $voting) {
             $voting->kategori = $this->getKategori($voting->rata_rata);
         }
 
-        return view('mahasiswa.riwayat.index', compact('votings'));
+        // Ambil daftar semester mahasiswa (1-14) untuk filter
+        $semesterList = range(1, 14);
+
+        return view('mahasiswa.riwayat.index', compact('votings', 'semesterList'));
     }
 
     public function show($id)

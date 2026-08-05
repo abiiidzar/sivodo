@@ -12,7 +12,8 @@
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('img/enbi1.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('img/ptleen1.png') }}">
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -22,12 +23,14 @@
     @stack('styles')
 </head>
 <body class="font-sans antialiased bg-krem">
-    <div class="min-h-screen flex flex-col">
+    <!-- PINDAHKAN x-data KE SINI -->
+    <div x-data="{ sidebarOpen: true }" class="min-h-screen flex flex-col">
+
         <!-- Navbar -->
         @include('layouts.navbar')
 
         <!-- Main Content Area -->
-        <div class="flex flex-1">
+        <div class="flex flex-1 overflow-hidden">
             <!-- Sidebar -->
             @include('layouts.sidebar')
 

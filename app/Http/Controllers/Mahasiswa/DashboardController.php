@@ -19,8 +19,9 @@ class DashboardController extends Controller
         $semesterAktif = Semester::getSemesterAktif();
 
         // === AMBIL DOSEN YANG MENGAJAR DI SEMESTER AKTIF ===
-        $dosens = Dosen::whereHas('mataKuliahs', function ($query) use ($semesterAktif) {
-            $query->where('semester', $semesterAktif->semester ?? 'Ganjil');
+        $dosens = Dosen::whereHas('mataKuliahs', function ($query) use ($semesterAktif, $mahasiswa) {
+            $query->where('semester', $semesterAktif->semester ?? 'Ganjil')
+            ->where('kelas', $mahasiswa->kelas);
         })->get();
 
         // === HITUNG STATISTIK ===

@@ -125,6 +125,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/backup/check-mysql', [BackupController::class, 'checkMysql'])->name('backup.check-mysql');
     Route::get('/backup/preview/{filename}', [BackupController::class, 'previewBackup'])->name('backup.preview');
     Route::post('/backup/restore-list/{filename}', [BackupController::class, 'restoreFromList'])->name('backup.restore-list');
+
+    // ============ ANALISIS DOSEN ============
+    Route::get('/analisis-dosen', [App\Http\Controllers\Admin\AnalisisDosenController::class, 'index'])->name('analisis.index');
+    Route::get('/analisis-dosen/{id}', [App\Http\Controllers\Admin\AnalisisDosenController::class, 'show'])->name('analisis.show');
+    Route::get('/analisis-dosen/{id}/export-pdf', [App\Http\Controllers\Admin\AnalisisDosenController::class, 'exportPdf'])->name('analisis.export-pdf');
+
 });
 
 // ============ MAHASISWA ROUTES ============
@@ -186,6 +192,13 @@ Route::middleware(['auth', 'role:pimpinan'])->prefix('pimpinan')->name('pimpinan
     // Export
     Route::get('/export/pdf', [ExportController::class, 'pdf'])->name('export.pdf');
     Route::get('/export/excel', [ExportController::class, 'excel'])->name('export.excel');
+
+
+    // ============ ANALISIS DOSEN (PIMPINAN) ============
+    Route::get('/analisis-dosen', [App\Http\Controllers\Pimpinan\AnalisisDosenController::class, 'index'])->name('analisis.index');
+    Route::get('/analisis-dosen/{id}', [App\Http\Controllers\Pimpinan\AnalisisDosenController::class, 'show'])->name('analisis.show');
+    Route::get('/analisis-dosen/{id}/export-pdf', [App\Http\Controllers\Pimpinan\AnalisisDosenController::class, 'exportPdf'])->name('analisis.export-pdf');
+    Route::get('/analisis-dosen/{id}/export-excel', [App\Http\Controllers\Pimpinan\AnalisisDosenController::class, 'exportExcel'])->name('analisis.export-excel');
 });
 
 // ============ PROFILE (semua role) ============

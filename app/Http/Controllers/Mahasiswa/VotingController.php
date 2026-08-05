@@ -31,10 +31,12 @@ class VotingController extends Controller
         }
 
         // Ambil semua dosen yang memiliki mata kuliah di semester aktif
-        $dosens = Dosen::whereHas('mataKuliahs', function ($query) use ($semesterAktif) {
-            $query->where('semester', $semesterAktif->semester);
-        })->with(['mataKuliahs' => function ($query) use ($semesterAktif) {
-            $query->where('semester', $semesterAktif->semester);
+        $dosens = Dosen::whereHas('mataKuliahs', function ($query) use ($semesterAktif, $mahasiswa) {
+            $query->where('semester', $semesterAktif->semester)
+                  ->where('kelas', $mahasiswa->kelas); // Filter kelas
+        })->with(['mataKuliahs' => function ($query) use ($semesterAktif, $mahasiswa) {
+            $query->where('semester', $semesterAktif->semester)
+                  ->where('kelas', $mahasiswa->kelas); // Filter kelas
         }])->get();
 
         // === HITUNG STATISTIK ===
@@ -70,14 +72,13 @@ class VotingController extends Controller
     }
 
     // Halaman form voting untuk dosen tertentu
-    public function create($dosenId)
+        public function create($dosenId)
     {
         $mahasiswa = Auth::user()->mahasiswa;
         $semesterAktif = Semester::where('status', 'Aktif')->first();
 
         if (!$semesterAktif) {
-            return redirect()->route('mahasiswa.voting')
-                ->with('error', 'Belum ada semester aktif.');
+            return redirect()->route('mahasiswa.voting')->with('error', 'Belum ada semester aktif.');
         }
 
         // Cek apakah sudah voting
@@ -87,28 +88,29 @@ class VotingController extends Controller
             ->exists();
 
         if ($sudahVoting) {
-            return redirect()->route('mahasiswa.voting')
-                ->with('error', 'Anda sudah memberikan penilaian untuk dosen ini.');
+            return redirect()->route('mahasiswa.voting')->with('error', 'Anda sudah memberikan penilaian untuk dosen ini.');
         }
 
-        $dosen = Dosen::with(['mataKuliahs' => function ($query) use ($semesterAktif) {
-            $query->where('semester', $semesterAktif->semester);
-        }])->findOrFail($dosenId);
+        // AMANKAN QUERY: Dosen harus mengajar di kelas mahasiswa ini
+        $dosen = Dosen::whereHas('mataKuliahs', function ($query) use ($semesterAktif, $mahasiswa) {
+            $query->where('semester', $semesterAktif->semester)
+                  ->where('kelas', $mahasiswa->kelas);
+        })->with(['mataKuliahs' => function ($query) use ($semesterAktif, $mahasiswa) {
+            $query->where('semester', $semesterAktif->semester)
+                  ->where('kelas', $mahasiswa->kelas);
+        }])->findOrFail($dosenId); // Akan 404 jika dosen tidak mengajar di kelas mahasiswa
 
-        $pertanyaans = Pertanyaan::where('status', true)
-            ->orderBy('urutan')
-            ->get();
+        $pertanyaans = Pertanyaan::where('status', true)->orderBy('urutan')->get();
 
         if ($pertanyaans->count() == 0) {
-            return redirect()->route('mahasiswa.voting')
-                ->with('error', 'Belum ada pertanyaan kuisioner. Silahkan hubungi admin.');
+            return redirect()->route('mahasiswa.voting')->with('error', 'Belum ada pertanyaan kuisioner. Silahkan hubungi admin.');
         }
 
         return view('mahasiswa.voting.create', compact('dosen', 'pertanyaans', 'semesterAktif', 'mahasiswa'));
     }
 
     // Proses simpan voting
-    public function store(Request $request)
+        public function store(Request $request)
     {
         $request->validate([
             'dosen_id' => 'required|exists:dosens,id',
@@ -123,28 +125,32 @@ class VotingController extends Controller
         $semesterAktif = Semester::where('status', 'Aktif')->first();
 
         if (!$semesterAktif) {
-            return redirect()->route('mahasiswa.voting')
-                ->with('error', 'Belum ada semester aktif.');
+            return redirect()->route('mahasiswa.voting')->with('error', 'Belum ada semester aktif.');
         }
 
-        // Cek unique voting (1 mahasiswa × 1 mata kuliah × 1 semester)
+        // CEK KEAMANAN: Pastikan mata kuliah yang dikirim benar-benar milik kelas mahasiswa ini
+        $mataKuliah = MataKuliah::where('id', $request->mata_kuliah_id)
+            ->where('kelas', $mahasiswa->kelas)
+            ->where('semester', $semesterAktif->semester)
+            ->first();
+
+        if (!$mataKuliah) {
+            return redirect()->route('mahasiswa.voting')->with('error', 'Akses ditolak! Mata kuliah ini bukan untuk kelas Anda.');
+        }
+
+        // Cek unique voting
         $exists = Voting::where('mahasiswa_id', $mahasiswa->id)
             ->where('mata_kuliah_id', $request->mata_kuliah_id)
             ->where('semester_id', $semesterAktif->id)
             ->exists();
 
         if ($exists) {
-            return redirect()->route('mahasiswa.voting')
-                ->with('error', 'Anda sudah memberikan penilaian untuk mata kuliah ini di semester ini.');
+            return redirect()->route('mahasiswa.voting')->with('error', 'Anda sudah memberikan penilaian untuk mata kuliah ini di semester ini.');
         }
 
-        // Hitung total skor
-        // $totalSkor = array_sum($request->nilai);
-        // $rataRata = round($totalSkor / count($request->nilai), 2);
-        // AMANKAN SEPERTI INI:
+        // Hitung skor
         $totalSkor = array_sum($request->nilai);
-        $jumlahPertanyaan = count($request->nilai);
-        $rataRata = $jumlahPertanyaan > 0 ? round($totalSkor * 0.8 / $jumlahPertanyaan, 2) : 0;
+        $rataRata = count($request->nilai) > 0 ? round($totalSkor / count($request->nilai), 2) : 0;
 
         // Simpan voting
         $voting = Voting::create([
@@ -158,7 +164,7 @@ class VotingController extends Controller
             'saran' => $request->saran,
         ]);
 
-        // Simpan detail voting
+        // Simpan detail
         foreach ($request->nilai as $pertanyaanId => $nilai) {
             VotingDetail::create([
                 'voting_id' => $voting->id,
@@ -170,15 +176,13 @@ class VotingController extends Controller
         // Update status voting mahasiswa
         $mahasiswa->update(['status_voting' => 'Sudah']);
 
-        // Log aktivitas
         ActivityLog::logActivity(
             Auth::id(),
             'Voting',
             "Mahasiswa {$mahasiswa->nama} memberikan voting untuk dosen ID: {$request->dosen_id}"
         );
 
-        return redirect()->route('mahasiswa.voting.hasil', $voting->id)
-            ->with('success', 'Voting berhasil disimpan!');
+        return redirect()->route('mahasiswa.voting.hasil', $voting->id)->with('success', 'Voting berhasil disimpan!');
     }
 
     // Halaman hasil voting
